@@ -1,3 +1,5 @@
 /logs
-/s/*
+/s/private/*
+/s/ignore/*
+/s/node_modules/*
 /admin/*

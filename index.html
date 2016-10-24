@@ -1,0 +1,566 @@
+<html> 
+	<head>
+		<meta charset = "utf-8" /> 
+		<title>Авиамясо! Онлайн</title> 
+		<link href='//fonts.googleapis.com/css?family=Cuprum&subset=latin,cyrillic' rel='stylesheet' type='text/css' />
+		<script src="//vk.com/js/api/openapi.js?113" type="text/javascript"></script>
+		<script src="//vk.com/js/api/xd_connection.js?20" type="text/javascript"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<!-- <script src = "https://78.155.197.229/planes2/socket.io.js" type="text/javascript"></script> -->
+		<!--<script src = "socket.io.js" type="text/javascript"></script>-->
+		<script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+		<!-- <script src="https://cdn.socket.io/socket.io-1.0.6.js"></script> -->
+		<script src = "j/jquery-ui.min.js" type = "text/javascript"></script>
+		<link href = "style.css" type = "text/css" rel = "stylesheet" />
+		<link href = "j/jquery-ui.min.css" type = "text/css" rel = "stylesheet" />
+	</head> 
+	<body>
+		<!--<div id = "imageshack">
+			<img src = "sprites/buttons-sprite.png"></img><img src = "sprites/madails-sprite.png"></img><img src = "sprites/shopweapons-sprite.png"></img><img src = "sprites/weapons-sprite.png"></img><img src = "effects/A.png"></img><img src = "effects/C.png"></img><img src = "effects/D.png"></img><img src = "effects/E.png"></img><img src = "effects/I.png"></img><img src = "effects/M.png"></img><img src = "effects/N.png"></img><img src = "effects/O.png"></img><img src = "effects/P.png"></img><img src = "effects/smoke.png"></img><img src = "rockets/A.png"></img><img src = "rockets/rA.png"></img><img src = "rockets/B.png"></img><img src = "rockets/rB.png"></img><img src = "rockets/C.png"></img><img src = "rockets/rC.png"></img><img src = "rockets/D.png"></img><img src = "rockets/rD.png"></img><img src = "rockets/E.png"></img><img src = "rockets/rE.png"></img><img src = "rockets/F.png"></img><img src = "rockets/rF.png"></img><img src = "rockets/G.png"></img><img src = "rockets/rG.png"></img><img src = "rockets/H.png"></img><img src = "rockets/rH.png"></img>
+			
+			<img src = "images/planes/big-damage.png"></img><img src = "images/planes/damage-left.png"></img><img src = "images/planes/damage-right.png"></img><img src = "images/planes/big-default.png"></img><img src = "images/planes/default-left.png"></img><img src = "images/planes/default-right.png"></img><img src = "images/planes/big-nyancat.png"></img><img src = "images/planes/nyancat-left.png"></img><img src = "images/planes/nyancat-right.png"></img><img src = "images/planes/big-radius.png"></img><img src = "images/planes/radius-left.png"></img><img src = "images/planes/radius-right.png"></img><img src = "images/planes/big-speed.png"></img><img src = "images/planes/speed-left.png"></img><img src = "images/planes/speed-right.png"></img><img src = "images/planes/big-suspension.png"></img><img src = "images/planes/suspension-left.png"></img><img src = "images/planes/suspension-right.png"></img>
+		</div>-->
+		<div id = "containerbody">
+		<div id = "menuLight" class = "interface"></div>
+		<div id = "info" class = "interface">
+			<div class = "left">
+				<div title = "Звёзды" id = "stars" style = "border-left:none"><div></div><span>10</span><div title = "Получить звёзды" class = "buyStars"></div></div>
+				<div title = "Уровень топлива" id = "gas"><div></div><span>100</span><div title = "Заправиться" class = "getGas"></div></div>
+				<div title = "Рейтинг" id = "rating"><div></div><span>1000</span><div title = "Увеличить процент добавления рейтинга" class = "buyRating"></div></div>
+				<div title = "Металл" id = "metall"><div></div><span>10</span></div>
+				<div title = "Кремний" id = "silicon"><div></div><span>10</span></div>
+				<div title = "Тротилл" id = "trotill"><div></div><span>10</span></div>
+				<div title = "Алмазы" id = "diamonds"><div></div><span>10</span></div>
+				<!--<div title = "Полноэкранный режим" id = "fullscreen" class = "null" onclick = "toggleFullScreen()"><div></div></div>-->
+			</div> 
+			<div class = "right">
+				<div title = "Группа приложения" id = "appGroup" class = "null"><a href = "https://vk.com/aviamyaso" target = "_blank"></a></div>
+				<div class = "online"><div title = "Онлайн"></div><span></span></div>
+			</div>
+		</div>
+		<table id = "menu" class = "interface">		
+			<tr>
+				<td id = "war">СРАЖЕНИЕ</td>
+				<td id = "shop">ВООРУЖЕНИЕ</td>
+				<td id = "planes">САМОЛЁТ</td>
+				<td id = "tehno">ТЕХНОЛОГИИ</td>
+				<td id = "ratings">ТУРНИРЫ</td>
+				<td id = "medails">МЕДАЛИ</td>
+				<td id = "bank">БАНК</td>
+				<td id = "chat">ЧАТ</td>
+			</tr>
+		</table>
+		<div id = "cam" class = "gameInterface">
+			<div id = "bonuses" class = "gameInterface"></div>
+			<div id = "canvases" class = "gameInterface">
+				<canvas id = "particles" width = "700px" height = "600px"></canvas>
+			</div>
+			<div id = "infoWar" class = "gameInterface">
+				<div id = "life"><div id = "lifeW"></div><div class = "img"></div></div>
+				<div id = "superSpeed"><div id = "superSpeedW"></div><div class = "img"></div></div>
+				<div id = "hot"><div id = "hotW"></div><div class = "img"></div></div>
+			</div>
+			<div id = "learning" class = "gameInterface"></div>
+			<div id = "nl">ПРОПУСТИТЬ ОБУЧЕНИЕ</div>
+			<div id = "warWeapons" class = "gameInterface">
+				<div class = "bon weapons">
+					<div class = "I"><div class = "val"><span>3</span></div></div>
+					<div class = "J"><div class = "val"><span>3</span></div></div>
+					<div class = "K"><div class = "val"><span>3</span></div></div>
+					<div class = "L"><div class = "val"><span>3</span></div></div>
+					<div class = "M"><div class = "val"><span>0</span></div></div>
+					<div class = "N"><div class = "val"><span>0</span></div></div>
+					<div class = "O"><div class = "val"><span>0</span></div></div>
+					<div class = "P"><div class = "val"><span>0</span></div></div>
+				</div>
+				<div class = "weap weapons">
+					<div class = "A"><div class = "val"><span>3</span></div></div>
+					<div class = "B"><div class = "val"><span>3</span></div></div>
+					<div class = "C"><div class = "val"><span>3</span></div></div>
+					<div class = "D"><div class = "val"><span>3</span></div></div>
+					<div class = "E"><div class = "val"><span>0</span></div></div>
+					<div class = "F"><div class = "val"><span>0</span></div></div>
+					<div class = "G"><div class = "val"><span>0</span></div></div>
+					<div class = "H"><div class = "val"><span>0</span></div></div>
+				</div>
+			</div>
+		</div>
+		<div id = "content" class = "interface">
+			<div class = "war" style = "display: none">
+				<div class = "c1 bor">
+					<div class = "choisePlane">
+						<div id = "name"><div></div><span>Боевой самолёт курсанта</span></div>
+						<img src = "images/planes/zip/big-default0.png" title = "Кликни, чтобы сменить самолёт." class = "plane"></img><br/>
+						<div class = "wmk">
+							<span class = "wkk0">Mk. I</span>
+							<span class = "wkk1">Mk. II</span>
+							<span class = "wkk2">Mk. III</span>
+						</div>
+						<p>Характеристики</p>
+						<div class = "hr"><div class = "light"></div></div>
+						<table>
+							<tr class = "speed"><td>Скорость: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+							<tr class = "radius"><td>Управление: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+							<tr class = "suspension"><td>Защита: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+							<tr class = "damage"><td>Мощность: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+							<tr class = "rate"><td>Скорострельность: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+						</table>
+						<p>Вооружение</p>
+						<div class = "hr"><div class = "light"></div></div>
+						<div class = "weapons">
+							<div class = "A" title = "Пулемёт"><div class = "val"><span>100</span></div></div>
+							<div class = "B" title = "Лёгкая ракета"><div class = "val"><span>25</span></div></div>
+							<div class = "C" title = "Ударная ракета"><div class = "val"><span>10</span></div></div>
+							<div class = "D" title = "Осколочная ракета"><div class = "val"><span>10</span></div></div>
+							<div class = "E" title = "Электро-ракета"><div class = "val"><span>0</span></div></div>
+							<div class = "F" title = "Слеповая ракета"><div class = "val"><span>0</span></div></div>
+							<div class = "G" title = "Быстрая ракета"><div class = "val"><span>0</span></div></div>
+							<div class = "H" title = "Точная ракета"><div class = "val"><span>0</span></div></div>
+							<div class = "I" title = "Аптечка"><div class = "val"><span>3</span></div></div>
+							<div class = "J" title = "Щит"><div class = "val"><span>3</span></div></div>
+							<div class = "K" title = "Прицел"><div class = "val"><span>3</span></div></div>
+							<div class = "L" title = "Телепорт"><div class = "val"><span>3</span></div></div>
+							<div class = "M" title = "Невидимость"><div class = "val"><span>0</span></div></div>
+							<div class = "N" title = "Отражатель"><div class = "val"><span>0</span></div></div>
+							<div class = "O" title = "Антинаведение"><div class = "val"><span>0</span></div></div>
+							<div class = "P" title = "Быстрая перезарядка"><div class = "val"><span>0</span></div></div>
+						</div> 
+						<p>Управление</p>
+						<div class = "hr"><div class = "light"></div></div>
+						<div id = "control" style = "text-align: left">
+							Вверх: <div class = "up" title = "Вверх (кликни, чтобы изменить клавишу)">A</div>
+							Вниз: <div class = "down" title = "Вниз (кликни, чтобы изменить клавишу)">Z</div><br/>
+						</div>
+					</div>
+				</div>
+				<div class = "c2 bor">
+					<h1>ВЫБЕРИ СОПЕРНИКА</h1>
+					<div class = "turn">
+						<table id = "turn">
+							<tr id = "inTurn">
+								<td class = "foto"><img src = "images/deactivated.gif"></img></td>
+								<td>
+									<span class = "name">Ты</span><br/>
+									Рейтинг: <span class = "rating">1000</span><br/>
+									Ставка: <span class = "range" title = "Если выиграешь - заработаешь в 2 раза больше звёзд. Проиграешь - потеряешь сколько поставил.">0</span>
+									<div class = "star"></div>
+									<div class = "arrow">
+										<div class = "plus" title = "Увеличить ставку (чем выше твой рейтинг, тем больше ты можешь сделать ставку)"></div>
+										<div class = "minus" title = "Уменьшить ставку"></div>
+									</div>									
+								</td>
+								<td>
+									<div class = "button">В очередь</div>
+								</td>
+							</tr>
+							<tr id = "botGame">
+								<td class = "foto"><img src = "images/computer.gif"></img></td>
+								<td>
+									<span class = "name">Искусственный<br/>
+									интеллект</span><br/>
+									Уровень: <span class = "lv">0</span>
+								</td>
+								<td>
+									<div class = "buttonb">Начать бой!</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class = "chat">
+				<div class = "c1 bor">
+					<div class = "messages">
+						<div class = "m"></div>
+					</div>
+					<input type = "text"></input>
+				</div>
+			</div>
+			<div class = "planes">
+				<div class = "c1">
+					
+					<div class = "carousel">
+						<img src = "images/planes/zip/big-default0.png" class = "default"></img><br/>
+						<img src = "images/planes/zip/big-speed0.png" class = "speed"></img>
+						<img src = "images/planes/zip/big-nyancat0.png" class = "nyancat"></img>
+						<img src = "images/planes/zip/big-radius0.png" class = "radius"></img><br/>																	
+						<img src = "images/planes/zip/big-suspension0.png" class = "suspension"></img>
+						<img src = "images/planes/zip/big-damage0.png" class = "damage"></img>
+									
+					</div>
+				</div>
+				<div class = "c2 bor">
+					<p>Характеристики</p>
+					<div class = "hr"><div class = "light"></div></div>
+					<table>
+						<tr class = "speed"><td>Скорость: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+						<tr class = "radius"><td>Управление: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+						<tr class = "suspension"><td>Защита: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+						<tr class = "damage"><td>Мощность: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+						<tr class = "rate"><td>Скорострельность: </td><td class = "count"></td><td><div class = "sector right min"></div><div class = "sector left min"><div class = "sector light"></div></div></td><td class = "plus param"></td></tr>
+					</table>
+					<p>Вооружение</p>
+					<div class = "hr"><div class = "light"></div></div>
+					<div class = "weapons">
+						<div class = "A" title = "Пулемёт"></div>
+						<div class = "B" title = "Лёгкая ракета"></div>
+						<div class = "C" title = "Ударная ракета"></div>
+						<div class = "D" title = "Осколочная ракета"></div>
+						<div class = "E" title = "Электро-ракета"></div>
+						<div class = "F" title = "Слеповая ракета"></div>
+						<div class = "G" title = "Быстрая ракета"></div>
+						<div class = "H" title = "Точная ракета"></div>
+						<div class = "I" title = "Аптечка"></div>
+						<div class = "J" title = "Щит"></div>
+						<div class = "K" title = "Прицел"></div>
+						<div class = "L" title = "Телепорт"></div>
+						<div class = "M" title = "Невидимость"></div>
+						<div class = "N" title = "Отражатель"></div>
+						<div class = "O" title = "Антинаведение"></div>
+						<div class = "P" title = "Быстрая перезарядка"></div>
+					</div>
+				</div>
+				<div class = "c3 bor">
+					<h1></h1>
+					<img src = "images/planes/zip/big-default0.png" class = "mk0"></img>
+						<div class = "arrow"></div>
+					<img src = "images/planes/zip/big-default1.png" class = "mk1"></img>
+						<div class = "arrow"></div>
+					<img src = "images/planes/zip/big-default2.png" class = "mk2"></img>
+					<span class = "mkk0">Mk. I</span>
+					<span class = "mkk1">Mk. II</span>
+					<span class = "mkk2">Mk. III</span><br/><br/>
+					<p>Для покупки необходимо:</p>
+					<div class = "hr"><div class = "light"></div></div>
+				</div>
+				<table>
+					<tr>
+						<td class = "price" title = "Необходимо звёзд"><div></div><span>18000</span></td>
+						<td class = "rating" title = "Необходимо рейтинга"><div></div><span>100000</span></td>
+					</tr>
+					<tr>
+						<td class = "r0" title = "Необходимо металла"><div></div><span>1000</span></td>
+						<td class = "r1" title = "Необходимо кремния"><div></div><span>1000</span></td>
+						<td class = "r2" title = "Необходимо тротилла"><div></div><span>1000</span></td>
+						<td class = "r3" title = "Необходимо алмазов"><div></div><span>300</span></td>
+					</tr>
+					<tr class = "t">
+						<td class = "t0" title = "Необходимый уровень &laquo;Усовершенствование микропроцессоров&raquo;"><div></div><span>10</span></td>
+						<td class = "t1" title = "Необходимый уровень &laquo;Усовершенствование турбин&raquo;"><div></div><span>10</span></td>
+						<td class = "t2" title = "Необходимый уровень &laquo;Усовершенствование строительного материала&raquo;"><div></div><span>10</span></td>
+						<td class = "t3" title = "Необходимый уровень &laquo;Усовершенствование системы наведения&raquo;"><div></div><span>10</span></td>
+						<td class = "t4" title = "Необходимый уровень &laquo;Технологии искусственного интеллекта&raquo;"><div></div><span>10</span></td>
+					</tr>
+					<tr>
+						<td colspan = "5"><div class = "buy plane">КУПИТЬ</div></td>
+					</tr>
+				</table>
+				<div class = "buyes">ЭТОТ САМОЛЁТ УЖЕ КУПЛЕН</div>
+			</div>
+			<div class = "shop"> 
+				<div class = "c1">
+					<div class = "left">
+						<h1>Пулемёт</h1>
+						<div class = "A"></div>
+						<table>
+							<tr class = "damage" title = "Уровень повреждения наносимый противнику"><td>Урон</td><td><span>10</span></td></tr>
+							<tr class = "radius" title = "Шанс попадания ракеты в соперника"><td>Точность</td><td><span>10</span></td></tr>
+							<tr class = "speed" title = "Скорость ракеты"><td>Скорость</td><td><span>10</span></td></tr>
+							<tr class = "rate" title = "Время перезарядки после выстрела"><td>Перезарядка</td><td><span>10</span></td></tr>
+							<tr class = "rating" title = "Необходимый минимальный рейтинг для покупки"><td>Рейтинг</td><td><span>10</span></td></tr>
+						</table>
+					</div>
+					<div class = "about"></div>
+					<div class = "buy weapon"><span>Купить 100 патронов за 1 звезду</span></div>
+					<div class = "buy wl"><span>Улучшить оружие до WL-II</span></div>
+				</div>
+				<div class = "c2 bor">
+					<div class = "weapons">
+						<h1>Оружие</h1>
+						<div class = "A" title = "Пулемёт"><div class = "val"><span>100</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "B" title = "Лёгкая ракета"><div class = "val"><span>25</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "C" title = "Ударная ракета"><div class = "val"><span>10</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "D" title = "Осколочная ракета"><div class = "val"><span>10</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "E" title = "Электро-ракета"><div class = "val"><span>0</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "F" title = "Слеповая ракета"><div class = "val"><span>0</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "G" title = "Быстрая ракета"><div class = "val"><span>0</span></div><div class = "valWL"><span>1</span></div></div>
+						<div class = "H" title = "Точная ракета"><div class = "val"><span>0</span></div><div class = "valWL"><span>1</span></div></div>
+						<h1>Снаряжение</h1>
+						<div class = "I" title = "Аптечка"><div class = "val"><span>3</span></div></div>
+						<div class = "J" title = "Щит"><div class = "val"><span>3</span></div></div>
+						<div class = "K" title = "Прицел"><div class = "val"><span>3</span></div></div>
+						<div class = "L" title = "Телепорт"><div class = "val"><span>3</span></div></div>
+						<div class = "M" title = "Невидимость"><div class = "val"><span>0</span></div></div>
+						<div class = "N" title = "Отражатель"><div class = "val"><span>0</span></div></div>
+						<div class = "O" title = "Антинаведение"><div class = "val"><span>0</span></div></div>
+						<div class = "P" title = "Быстрая перезарядка"><div class = "val"><span>0</span></div></div>
+					</div>
+				</div>
+			</div>
+			<div class = "medails">
+				<div class = "c1 bor">
+					<div>
+						<table>
+							<tr><td>Статус</td><td>Задание</td><td>Выполнение</td><td>Награда</td></tr>
+							<tr><td><div class = "off qq1"></div></td><td>Сыграть 10 раз</td><td class = "q1">10</td><td>5 осколочных ракет</td></tr>
+							<tr><td><div class = "off qq2"></div></td><td>Сыграть 50 раз</td><td class = "q2">50</td><td>50 осколочных ракет и 50 ударных ракет</td></tr>
+							<tr><td><div class = "off qq3"></div></td><td>Сыграть 100 раз</td><td class = "q3">100</td><td>10 алмазов</td></tr>
+							<tr><td><div class = "off qq4"></div></td><td>Сыграть 500 раз</td><td class = "q4">500</td><td>30 металла, 30 кремния, 30 тротилла и 15 алмазов</td></tr>
+							<tr><td><div class = "off qq5"></div></td><td>Сыграть 1000 раз</td><td class = "q5">1000</td><td>50 алмазов и 100 звёзд</td></tr>
+							<tr><td><div class = "off qq6"></div></td><td>Победить 10 раз</td><td class = "q6">10</td><td>+5% к заработанному рейтингу за каждую победу</td></tr>
+							<tr><td><div class = "off qq7"></div></td><td>Победить 50 раз</td><td class = "q7">50</td><td>+10% к заработанному рейтингу за каждую победу</td></tr>
+							<tr><td><div class = "off qq8"></div></td><td>Победить 100 раз</td><td class = "q8">100</td><td>+20% к заработанному рейтингу за каждую победу</td></tr>
+							<tr><td><div class = "off qq9"></div></td><td>Победить 500 раз</td><td class = "q9">500</td><td>+35% к заработанному рейтингу за каждую победу</td></tr>
+							<tr><td><div class = "off qq10"></div></td><td>Победить 1000 раз</td><td class = "q10">1000</td><td>+50% к заработанному рейтингу за каждую победу</td></tr>				
+							<tr><td><div class = "off qq11"></div></td><td>Добить пулемётом</td><td class = "q11">1</td><td>100 патронов к пулемёту</td></tr>
+							<tr><td><div class = "off qq12"></div></td><td>Купить все самолёты</td><td class = "q12">18</td><td>100 алмазов</td></tr>
+							<tr><td><div class = "off qq13"></div></td><td>Наворовать 500 единиц топлива</td><td class = "q13">500</td><td>50 металла, 50 кремния, 50 тротилла и 30 алмазов</td></tr>
+							<tr><td><div class = "off qq14"></div></td><td>Победить с 1 жизнью</td><td class = "q14">1</td><td>20 щитов и 20 аптечек</td></tr>
+							<tr><td><div class = "off qq15"></div></td><td>Набрать 10 000 рейтинга</td><td class = "q15">9000</td><td>10 алмазов</td></tr>
+							<tr><td><div class = "off qq16"></div></td><td>Набрать 100 000 рейтинга</td><td class = "q16">99000</td><td>40 металла, 40 кремния, 40 тротилла и 100 звёзд</td></tr>
+							<tr><td><div class = "off qq17"></div></td><td>Играть 5 дней подряд</td><td class = "q17">4</td><td>+3% к заработанному рейтингу за каждую следующую победу</td></tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class = "tehno">
+				<div class = "c1 bor">
+					<div>
+						<div id = "teh0" class = "teh">
+							<div class = "image"><div class = "name">Усовершенствование микропроцессоров</div><div class = "level">Уровень:&nbsp;&nbsp;<span></span></div></div>
+							<p><br/><br/><br/>Разработка новых микропроцессоров - одно из основных направлений, над которым трудятся ученые. Новые, более быстрые процессоры позволяют получать доступ к базу данных противника, и перед вылетом узнавать некоторых характерисики самолёта. С каждым уровнем развития технологии можно узнать больше о самолёте соперника.</p>
+							<p class = "time"><span class = "sss">Время изучения:</span> <span class = "ttt">12 часов</span></p>
+							<div class = "go">
+								<div class = "d" title = "Необходимо алмазов для начала изучения"></div><span class = "tehnod">10</span>
+								<div class = "s" title = "Необходимо звёзд для начала изучения"></div><span class = "tehnos">10</span>
+								<div class = "buy tehnology">Начать изучение технологии</div>
+							</div>
+						</div>
+						<div id = "teh1" class = "teh">
+							<div class = "image"><div class = "name">Усовершенствование турбин</div><div class = "level">Уровень:&nbsp;&nbsp;<span></span></div></div>
+							<p><br/><br/><br/>Ученые постоянно работают над мощностью турбин. По мере совершенствования технологий производства турбин, супер-топливо расходуется экономичнее и даёт возможность самолёту лететь ещё быстрее.</p>
+							<p class = "time"><span class = "sss">Время изучения:</span> <span class = "ttt">12 часов</span></p>
+							<div class = "go">
+								<div class = "d" title = "Необходимо алмазов для начала изучения"></div><span class = "tehnod">10</span>
+								<div class = "s" title = "Необходимо звёзд для начала изучения"></div><span class = "tehnos">10</span>
+								<div class = "buy tehnology">Начать изучение технологии</div>
+							</div>
+						</div>
+						<div id = "teh2" class = "teh">
+							<div class = "image"><div class = "name">Усовершенствование строительного материала</div><div class = "level">Уровень:&nbsp;&nbsp;<span></span></div></div>
+							<p><br/><br/><br/>Вес материала, как и его свойства, из которого изготовлены детали самолёта - огромная проблема. Ученые работают над улучшением его свойств. На новых этапах развития металл приобретает свойство самовосстановления.</p>
+							<p class = "time"><span class = "sss">Время изучения:</span> <span class = "ttt">12 часов</span></p>
+							<div class = "go">
+								<div class = "d" title = "Необходимо алмазов для начала изучения"></div><span class = "tehnod">10</span>
+								<div class = "s" title = "Необходимо звёзд для начала изучения"></div><span class = "tehnos">10</span>
+								<div class = "buy tehnology">Начать изучение технологии</div>
+							</div>
+						</div>
+						<div id = "teh3" class = "teh">
+							<div class = "image"><div class = "name">Усовершенствование системы наведения</div><div class = "level">Уровень:&nbsp;&nbsp;<span></span></div></div>
+							<p><br/><br/><br/>Система наведения в современных самолётах очень сложная, и требует не только скорости работы бортового компьютера, но и проработки новых алгоритмов поиска вражеского самолёта. Каждый этап позволяет корректировать неточности выстрела, и ракеты летят к цели точнее.</p>
+							<p class = "time"><span class = "sss">Время изучения:</span> <span class = "ttt">12 часов</span></p>
+							<div class = "go">
+								<div class = "d" title = "Необходимо алмазов для начала изучения"></div><span class = "tehnod">10</span>
+								<div class = "s" title = "Необходимо звёзд для начала изучения"></div><span class = "tehnos">10</span>
+								<div class = "buy tehnology">Начать изучение технологии</div>
+							</div>
+						</div>
+						<div id = "teh4" class = "teh">
+							<div class = "image"><div class = "name">Технологии искусственного интеллекта</div><div class = "level">Уровень:&nbsp;&nbsp;<span></span></div></div>
+							<p><br/><br/><br/>Инженеры из Отдела Безопасности могут полуить доступ к главному компьютеру исскуственного интеллекта. Благодаря этому есть возможность использовать некоторые новые технологии: автоаптечка (с 3 уровня), увеличение порога перегрева.</p>
+							<p class = "time"><span class = "sss">Время изучения:</span> <span class = "ttt">12 часов</span></p>
+							<div class = "go">
+								<div class = "d" title = "Необходимо алмазов для начала изучения"></div><span class = "tehnod">10</span>
+								<div class = "s" title = "Необходимо звёзд для начала изучения"></div><span class = "tehnos">10</span>
+								<div class = "buy tehnology">Начать изучение технологии</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class = "bank">
+				<div class = "c1 bor">
+					<p>Если тебе срочно нужно немного звёзд, то самый простой способ их получить - купить за голоса Вконтакте.</p>
+					<table>
+						<tr>
+							<td><b>10</b><div></div><br/>за 1 голос</td><td class = "buys _1"><div><span>КУПИТЬ</span></div></td>
+							<td><b>50</b><div></div><span>+ 2 бонус</span><br/>за 5 голосов</td><td class = "buys _2"><div><span>КУПИТЬ</span></div></td>
+						</tr>
+						<tr>
+							<td><b>100</b><div></div><span>+ 10 бонус</span><br/>за 10 голосов</td><td class = "buys _3"><div><span>КУПИТЬ</span></div></td>
+							<td><b>300</b><div></div><span>+ 50 бонус</span><br/>за 30 голосов</td><td class = "buys _4"><div><span>КУПИТЬ</span></div></td>
+						</tr>
+						<tr>
+							<td><b>500</b><div></div><span>+ 100 бонус</span><br/>за 50 голосов</td><td class = "buys _5"><div><span>КУПИТЬ</span></div></td>
+							<td><b>1000</b><div></div><span>+ 250 бонус</span><br/>за 100 голосов</td><td class = "buys _6"><div><span>КУПИТЬ</span></div></td>
+						</tr>
+						<tr>
+							<td><div class = "smallCube"></div><span>Малый<br/>куб ресурсов</span><br/>3 голоса</td><td class = "buys cube1"><div><span>КУПИТЬ</span></div></td>
+							<td><div class = "bigCube"></div><span>Большой<br/>куб ресурсов</span><br/>7 голосов</td><td class = "buys cube2"><div><span>КУПИТЬ</span></div></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class = "ratings">
+				<div class = "c1 bor">
+					<table class = "header">
+						<tr><td class = "turnirName" colspan = "7">Общий рейтинг игроков</td></tr>
+						<tr>
+							<td class = "per" style = "width:270px">Период: <span></span></td>
+							<td style = "width:150px">Награда за 1 место</td>
+							<td class = "st stars1"><div></div><span></span></td>
+							<td class = "me metall1"><div></div><span></span></td>
+							<td class = "si silicon1"><div></div><span></span></td>
+							<td class = "tr trotill1"><div></div><span></span></td>
+							<td class = "di diamonds1"><div></div><span></span></td>
+						</tr>
+						<tr>
+							<td class = "pri">Стоимость участия: <span></span></td>
+							<td>Награда за 2 место</td>
+							<td class = "st stars2"><div></div><span></span></td>
+							<td class = "me metall2"><div></div><span></span></td>
+							<td class = "si silicon2"><div></div><span></span></td>
+							<td class = "tr trotill2"><div></div><span></span></td>
+							<td class = "di diamonds2"><div></div><span></span></td>
+						</tr>
+						<tr>
+							<td class = "ove">До окончания турнира: <span></span></td>
+							<td>Награда за 3 место</td>
+							<td class = "st stars3"><div></div><span></span></td>
+							<td class = "me metall3"><div></div><span></span></td>
+							<td class = "si silicon3"><div></div><span></span></td>
+							<td class = "tr trotill3"><div></div><span></span></td>
+							<td class = "di diamonds3"><div></div><span></span></td>
+						</tr>
+						<tr>
+							<td class = "rel">Обновление таблицы: <span></span></td>
+							<td>Награда за 4-10 место</td>
+							<td class = "st stars4"><div></div><span></span></td>
+							<td class = "me metall4"><div></div><span></span></td>
+							<td class = "si silicon4"><div></div><span></span></td>
+							<td class = "tr trotill4"><div></div><span></span></td>
+							<td class = "di diamonds4"><div></div><span></span></td>
+						</tr>
+						<tr><td class = "setTurnir" colspan = "7"><br/>Подать заявку на участие в турнире (сбор статистики побед начнётся после подачи заявки)</td></tr>
+					</table>
+					<div class = "cells"><span style = "width:30px">№</span><span style = "width:206px">Имя</span><span class = "col" style = "width:85px">Рейтинг</span></div>
+					<div class = "scroll">
+						<table class = "list">
+							
+						</table>
+					</div>
+					<div class = "profile">
+						<img class = "photo" src = "images/deactivated.gif"></img>
+						<span class = "name"><span>Имя</span></span><br/>
+						<span class = "rating">Рейтинг: <span>0</span></span><br/>
+						<span class = "game">Играет: <span>0 ддней</span></span><br/>
+						<span class = "win">Побед: <span>0</span></span><br/>
+						<span class = "fail">Поражений: <span>0</span></span><br/>
+						<span class = "online"><span>Сейчас не в игре</span></span><br/><span></span><br/>
+						<span class = "w">Награды</span><br/>
+						<span class = "med">
+							<div class = "m1" title = "Сыграл 10 игр"></div>
+							<div class = "m2" title = "Сыграл 50 игр"></div>
+							<div class = "m3" title = "Сыграл 100 игр"></div>
+							<div class = "m4" title = "Сыграл 500 игр"></div>
+							<div class = "m5" title = "Сыграл 1000 игр"></div>
+							<div class = "m6" title = "Победил 10 раз"></div>
+							<div class = "m7" title = "Победил 50 раз"></div>
+							<div class = "m8" title = "Победил 100 раз"></div>
+							<div class = "m9" title = "Победил 500 раз"></div>
+							<div class = "m10" title = "Победил 1000 раз"></div>
+							<div class = "m11" title = "Добил соперника пулемётом"></div>
+							<div class = "m12" title = "Купил все самолёты"></div>
+							<div class = "m13" title = "Наворовал 500 единиц топлива"></div>
+							<div class = "m14" title = "Победил с 1 жизнью"></div>
+							<div class = "m15" title = "Набрал 10000 рейтинга"></div>
+							<div class = "m16" title = "Набрал 100000 рейтинга"></div>
+							<div class = "m17" title = "Играл 5 дней подряд"></div>
+						</span><br/>
+						<span class = "ar w">Позиция в рейтинге всех игроков: <span>-</span></span><br/>
+						<span class = "nr w">Позиция в недельном турнире побед: <span>-</span></span><br/>
+						<span class = "mr w">Позиция в месячном турнире побед: <span>-</span></span><br/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id = "shadow"></div>
+		<div id = "one" class = "message">
+			<div class = "close" title = "Закрыть"></div>
+			<p></p>
+			<a class = "but button"></a>
+		</div>
+		<div id = "two" class = "message">
+			<div class = "close" title = "Закрыть"></div>
+			<p></p>
+			<a class = "but1 button"></a>
+			<a class = "but2 button"></a>
+		</div>
+		<div id = "preloader" class = "message">
+			<p></p>
+			<br/><img src = "images/search.gif" alt = "Ожидание..."></img><br/>
+		</div>
+		<div id = "ruletka">
+			<img src = "images/shape.png" class = "shape"/>
+			<img src = "images/center.png" class = "center"/>
+			<div class = "surprize"></div>
+			<div class = "start_rul">START</div>
+		</div>
+		<div id="vk_ads_4726"></div>
+		<div id = "prePreloader">
+			<img src = "images/preload1.jpg" id = "preloader1" alt = "ядерный взрыв"></img>
+			<img src = "images/preload2.jpg" id = "preloader2" alt = "мир"></img>
+			<div id = "preloaderText"></div>
+			<img src = "images/planes/zip/big-default0.png" id = "preloaderPlane"></img>
+			<div id = "preloaderImage"></div>
+		</div>
+		</div>
+		<script>
+			/*preloadText = ['НЕ ЛЕТАЙ СЛИШКОМ НИЗКО - ТАК ТЫ РИСКУЕШЬ РАЗБИТЬСЯ ОБ ЗЕМЛЮ',
+			'ИГРАЙ КАЖДЫЙ ДЕНЬ И ПОЛУЧАЙ ЕЖЕДНЕВНЫЙ БОНУС!',
+			'БУДЬ В КУРСЕ ПОСЛЕДНИХ СОБЫТИЙ - <a href = "https://vk.com/aviamyaso" target = "_blank">ПОДПИСЫВАЙСЯ НА ГРУППУ ПРИЛОЖЕНИЯ!</a>',
+			'ПРИ ПОЛЁТЕ НА БОЛЬШОЙ ВЫСОТЕ САМОЛЁТ ЛЕТИТ ГОРАЗДО МЕДЛЕННЕЕ, НЕ СТОИТ ПОДСТАВЛЯТЬСЯ ПОД ВРАЖЕСКИЕ РАКЕТЫ!',
+			'ИСПОЛЬЗУЙ УДАРНУЮ РАКЕТУ, ЧТОБЫ СБИТЬ НАПРАВЛЕНИЕ ПОЛЁТА СОПЕРНИКА',
+			'СОБИРАЙ БОНУСЫ НА ПОЛЕ, ИНОГДА ОНИ МОГУТ БЫТЬ ОЧЕНЬ ПОЛЕЗНЫМИ!',
+			'РЕЙТИНГ ПРЕЖДЕ ВСЕГО ПОКАЗЫВАЕТ ОПЫТ, ТАК ЧТО НЕ СТОИТ СРАЖАТЬСЯ С ИГРОКАМИ С ВЫСОКИМ РЕЙТИНГОМ',
+			'ЕСЛИ У ТЕБЯ ЗАКОНЧИЛИСЬ ЗВЁЗДЫ - НЕ РАССТРАИВАЙСЯ! ЗАЙДИ В ИГРУ НА СЛЕДУЮЩИЙ ДЕНЬ И ПОЛУЧИ ЕЖЕДНЕВНЫЙ БОНУС!',
+			'РЕКОМЕНДУЕМ ИСПОЛЬЗОВАТЬ АПТЕЧКУ ТОЛЬКО В СЛУЧАЕ КРАЙНЕЙ НЕОБХОДИМОСТИ!',
+			'ВКЛЮЧЕНИЕ ЛАЗЕРНОГО ПРИЦЕЛА ПОМОЖЕТ ТЕБЕ ПРИ АТАКЕ С БОЛЬШОГО РАССТОЯНИЯ',
+			'ПЕРЕД КАЖДЫМ БОЕМ НЕ ЗАБУДЬ ПРОВЕРИТЬ ОСТАТОК БОЕПРИПАСОВ!',
+			'В КАЖДОМ БОЮ ТРАТИТСЯ 10 ЕДИНИЦ ТОПЛИВА, НЕ ЗАБЫВАЙ ВОВРЕМЯ ЗАПРАВИТЬСЯ!',
+			'НЕ РЕКОМЕНДУЕТСЯ УСТАНАВЛИВАТЬ КЛАВИШИ СО СТРЕЛКАМИ ДЛЯ УПРАВЛЕНИЯ САМОЛЁТОМ, ТАК КАК В НЕКОТОРЫХ БРАУЗЕРАХ МОЖЕТ СРАБАТЫВАТЬ ПРОКРУТКА СТРАНИЦЫ',
+			'ДЛЯ БОЛЕЕ ЭФФЕКТИВНОЙ АТАКИ ТЫ МОЖЕШЬ БЫСТРО КЛИКАТЬ МЫШКОЙ В ЛЮБОМ МЕСТЕ ЭКРАНА. В ЭТОМ СЛУЧАЕ ВЫСТРЕЛ БУДЕТ ПРОИЗВОДИТЬСЯ ОДНИМ ИЗ 4 ОСНОВНЫХ ОРУЖИЙ, КОТОРОЕ НА ДАННЫЙ МОМЕНТ ПЕРЕЗАРЯЖЕНО',
+			'В ПЕРВУЮ ОЧЕРЕДЬ УВЕЛИЧИВАЙ МАНЁВРЕННОСТЬ САМОЛЁТА И МОЩНОСТЬ ОРУЖИЯ',
+			'ВЫПОЛНЯЙ ЗАДАНИЯ И ПОЛУЧАЙ МЕДАЛИ И ЦЕННЫЕ НАГРАДЫ!',
+			'ЕСЛИ ТЫ НАХОДИШЬСЯ В СПИСКЕ 30 ЛУЧШИХ ИГРОКОВ - ТО У ТЕБЯ ЕСТЬ КОЕ-КАКИЕ ПРИВЕЛЕГИИ =)',
+			'САМОЛЁТ ИСКУССТВЕННОГО ИНТЕЛЛЕКТА СТАНОВИТСЯ МОЩНЕЕ С КАЖДЫМ УРОВНЕМ. ЕМУ ДОБАВЛЯЮТСЯ НЕКОТОРЫЕ ХАРАКТЕРИСТИКИ, НОВОЕ ОРУЖИЕ И ОБНОВЛЯЕТСЯ ПРОГРАММА УПРАВЛЕНИЯ',
+			'ИСПОЛЬЗОВАНИЕ ЩИТА В САМОМ НАЧАЛЕ БИТВЫ ДАСТ ТЕБЕ НЕБОЛЬШОЕ ПРЕИМУЩЕСТВО',
+			'ПОЛНАЯ ЗАПРАВКА САМОЛЁТА ДЛИТСЯ ПРИМЕРНО 15 МИНУТ, НО МОЖНО УСКОРИТЬ ЭТОТ ПРОЦЕСС, СЛИВАЯ ТОПЛИВО У ДРУЗЕЙ',
+			'ТЫ МОЖЕШЬ ХВАСТАТЬСЯ СВОИМИ УСПЕХАМИ ПЕРЕД ДРУЗЬЯМИ, РАЗМЕЩАЯ МЕДАЛИ У СЕБЯ НА СТЕНЕ'];
+			startPreloaderTime = Date.now();
+			document.getElementById('preloaderText').innerHTML = preloadText[Math.round(Math.random() * (preloadText.length-1))];
+			preleft = 70;
+			prewidth = 0;
+			preop = 1;
+			preloadInt = setInterval(function(){
+				preop -= (0.005*((Date.now()-startPreloaderTime)/20));
+				if(preop >= 0){
+					document.getElementById('preloader2').style.opacity = preop;
+					preleft += (2.5*((Date.now()-startPreloaderTime)/20));
+					prewidth += (2.5*((Date.now()-startPreloaderTime)/20));
+					document.getElementById('preloaderPlane').style.left = preleft+'px';
+					document.getElementById('preloaderImage').style.width = prewidth+'px';
+				}
+				else if(preop < -0.15){		
+					document.getElementById('prePreloader').style.display = 'none';
+					$('#vk_ads_4726').css('display','none');
+					clearInterval(preloadInt);
+				}
+				startPreloaderTime = Date.now();
+			}, 20);*/
+			document.getElementById('prePreloader').style.display = 'none';
+		</script>
+		<script src = "all.js" type = "text/javascript"></script>
+	</body>
+</html>

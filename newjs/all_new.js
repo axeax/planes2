@@ -5,6 +5,7 @@ class 			ClassName
 method			_methodName
 prototype		_prototypeMethodName
 var, let 		char_variableName, int_variableName
+1|2|3...		case_variableName (один из нескольких статичных параметров)
 function 		f_functionName
 object			o_objectName
 array			a_arrayName
@@ -76,6 +77,7 @@ $(document).on('load', function() {
 
 	/* GAME CLASSES */
 
+	// ракеты
 	class Rockets{
 
 		constructor(o_rocketParams, float_playerX, float_playerY){
@@ -83,17 +85,6 @@ $(document).on('load', function() {
 			// console.log(o_params._comment);
 
 			Object.assign(this, params);
-
-			/* DELETED */
-			// this.koef = o_rocketParams.koef;
-			// this.x = o_rocketParams.x;
-			// this.y = o_rocketParams.y;
-			// this.s = o_rocketParams.speed;
-			// this.typeW = o_rocketParams.typeW;
-			// this.hit = o_rocketParams.hit;
-			// Math.PI180 = Math.PI/180;
-			// this.a = (this.typeW == 'H') ? -Math.atan2(this.y-y, this.x-x)*180/Math.PI+((this.koef == 1)?180:0) : o_rocketParams.a;
-			/* /DELETED */
 
 			// если ракета самонаводящаяся, то угол остается дефолтный, если нет то считается по формуле
 			if(this.case_typeW == 'H'){
@@ -118,9 +109,17 @@ $(document).on('load', function() {
 
 		// отрисовка ракеты
 		// TODO: разобраться что такое o_frameTime и переписать фуекцию с учетом типов данных
-		draw(o_frameTime, canvas_context){
+		_draw(o_frameTime, canvas_context){
 
-			if(this.x > 1000 || this.x < -300 || this.y > 1000 || this.y < -300) return 'coordLimit';
+			// если ракета за пределами экрана, возвращаем лимит координат
+			// TODO: переписать крайние координаты в глобальные настройки
+			if(this.float_x > 1000 || this.float_x < -300 || this.float_y > 1000 || this.float_y < -300){
+
+				return 'coordLimit';
+
+			}
+
+			// TODO: переписать эту магию
 			let timeK = t.tr/40;
 			this.nach = timeK*this.koef*this.s;
 			this.y -= this.nach*Math.sin(this.a*Math.float_PI180);
@@ -131,6 +130,68 @@ $(document).on('load', function() {
 			canvas_context.rotate(-this.a*Math.float_PI180);
 			canvas_context.drawImage(this.image, -this.w/2, -this.h/2, this.w, this.h);
 			canvas_context.restore();
+
+		}
+
+	}
+
+	//игроки
+	class Player{
+
+		constructor(o_params){
+
+			// console.log(o_params._comment);
+
+			Object.assign(this, o_params);
+
+
+
+		}
+
+		
+
+	}
+
+	class Interface{
+
+		constructor(link_o_player, link_o_global){
+
+			this.link_o_player = link_o_player;
+			this.link_o_global = link_o_global;
+
+		}
+
+		// прописывает ресурсы в интерфейс
+		_$_setResources(){
+
+			$('#metall span').html(this.link_o_player.a_int_resources[0]);
+			$('#silicon span').html(this.link_o_player.a_int_resources[1]);
+			$('#trotill span').html(this.link_o_player.a_int_resources[2]);
+			$('#diamonds span').html(this.link_o_player.a_int_resources[3]);
+
+		}
+
+		// во время битвы пишет текущее здоровье
+		_$_setWarLife(){
+			
+			$('#lifeW').css({width:this.link_o_player.float_life*1.8});
+			$('#life .img').css({left:-20+this.link_o_player.float_life*1.8});
+
+		}
+
+		// во время битвы устанавливает прогресс накопления суперскорости
+		_$_setWarSpeed(){
+			
+			$('#superSpeedW').css({width:this.link_o_player.float_superSpeedW});
+			$('#superSpeed .img').css({left:-25+this.link_o_player.float_superSpeedW});
+
+		}
+
+		// во время битвы устанавливает прогресс накопления перегрева
+		_$_setWarHot(){
+			
+			$('#hotW').css({width:this.link_o_player.float_hot*1.8});
+			$('#hot .img').css({left:-14+this.link_o_player.float_hot*1.8});
 
 		}
 

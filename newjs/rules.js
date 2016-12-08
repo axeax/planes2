@@ -20,6 +20,7 @@ DOM function 	f_$_functionName
 DOM method 		_$_methodName
 
 objects need method _comment
+передача this в jquery callback: var link_out = this; 
 
 */
 /* /NAME RULES */

@@ -25,6 +25,8 @@ $(document).on('load', function() {
 
 			} // /for
 
+			return;
+
 		} // /Object.prototype._comment
 
 
@@ -108,7 +110,63 @@ $(document).on('load', function() {
 			canvas_context.drawImage(this.image, -this.w/2, -this.h/2, this.w, this.h);
 			canvas_context.restore();
 
+			return;
+
 		}
+
+	}
+
+	class War{
+
+		constructor(link_o_player, link_o_global){
+
+			this.link_o_player = link_o_player;
+			this.link_o_global = link_o_global;
+
+		}
+
+		// навешиваем обработчик события клавиатуры
+		_initKeyboardEvents(){
+
+			var link_out = this;
+
+			$(document).on('keyup keydown keypress', this._keyboardEvent);
+
+			return;
+
+		}
+
+		// обработчик события клавиатуры
+		_keyboardEvent(o_ev){
+
+			switch(o_ev.keyCode){
+
+				
+				case link_out.link_o_player.o_controlUp:
+				// клавиша вверх
+
+					link_out.link_o_player._controlEvent('up');
+
+				break;
+				
+				case link_out.link_o_player.o_controlDown:
+				// клавиша вниз
+
+					link_out.link_o_player._controlEvent('down');
+
+				break;
+
+				default:
+				// остальные клавиши (оружие, супер-скорость и т.д.)
+
+					link_out.link_o_player._controlEvent('keyboardEvent', o_ev.keyCode);
+
+
+			} // /switch
+
+			return;
+
+		} // /_keyboardEvent
 
 	}
 
@@ -146,6 +204,8 @@ $(document).on('load', function() {
 			$('#trotill span').html(this.link_o_player.a_int_resources[2]);
 			$('#diamonds span').html(this.link_o_player.a_int_resources[3]);
 
+			return;
+
 		}
 
 		// во время битвы пишет текущее здоровье
@@ -153,6 +213,8 @@ $(document).on('load', function() {
 			
 			$('#lifeW').css({width:this.link_o_player.float_life*1.8});
 			$('#life .img').css({left:-20+this.link_o_player.float_life*1.8});
+
+			return;
 
 		}
 
@@ -162,6 +224,8 @@ $(document).on('load', function() {
 			$('#superSpeedW').css({width:this.link_o_player.float_superSpeedW});
 			$('#superSpeed .img').css({left:-25+this.link_o_player.float_superSpeedW});
 
+			return;
+
 		}
 
 		// во время битвы устанавливает прогресс накопления перегрева
@@ -170,8 +234,64 @@ $(document).on('load', function() {
 			$('#hotW').css({width:this.link_o_player.float_hot*1.8});
 			$('#hot .img').css({left:-14+this.link_o_player.float_hot*1.8});
 
+			return;
+
 		}
 
-	}
+		// скрывает игровой интерфейс
+		_$_hiddenGame(){
+
+			$('.game-interface').addClass('.game-interface_off');
+
+			return;
+
+		}
+		// показывает игровой интерфейс
+		_$_hiddenGame(){
+
+			$('.game-interface').removeClass('.game-interface_off');
+
+			return;
+
+		}
+
+		// скрывает интерфейс битвы
+		_$_showWar(){
+
+			$('.war-interface').addClass('.war-interface_off');
+
+			return;
+
+		}
+		// показывает интерфейс битвы
+		_$_showWar(){
+
+			$('.war-interface').removeClass('.war-interface_off');
+
+			return;
+
+		}
+
+		// заполняет интерфейс битвы данными
+		_$_fillWar(){
+
+			let $_warInterfaceData = $(`.war-interface__data`);
+
+			for(let i = 0; i < $_warInterfaceData.length; i++){
+
+				let $_el = $_warInterfaceData[i];
+				let char_dataName = $_el.data('data-name');
+				let var_dataValue = this.link_o_player[char_dataName];
+
+				$_el.html(var_dataValue);
+
+			} // /for
+
+			return;
+
+		}
+
+
+	} // /Interface
 
 })

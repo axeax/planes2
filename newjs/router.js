@@ -12,15 +12,16 @@ f_warRouter(o_message){
 		// старт битвы
 
 			// убираем игровой интерфейс
-			_Interface.f_$_hideGameInterface();
+			_Interface._$_hideGame();
 
 			// включаем интерфейс битвы
-			_Interface.f_$_showWarInterface();
+			_Interface._$_showWar();
 
 			// зполняем интерфейс битвы данными
-			_Interface.f_$_fillWarInterface();
+			_Interface._$_fillWar();
 
 			// инициализируем объект войны
+			// TODO: передать глобальный объект и объект игрока по ссылке
 			var _War = new War();
 
 			// инициализируем игроков
@@ -33,7 +34,7 @@ f_warRouter(o_message){
 			var _o_Skills = new Skills();
 
 			// включаем клавиатурные события
-			_War._keyboardEvents();
+			_War._initKeyboardEvents();
 
 			// старт отрисовки
 			_War._start();
@@ -94,7 +95,11 @@ f_warRouter(o_message){
 			// добавляем объект на карту TODO
 			_o_War._putMapObject(new MapObject(o_message));
 
-	}
+		break;
+
+	} // /switch
+
+	return;
 
 }
 

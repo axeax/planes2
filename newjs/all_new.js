@@ -15,17 +15,19 @@ $(document).on('load', function() {
 		// returned all key:value this object
 		Object.prototype._comment = function(){
 
+			let char_str = ``;
+
 			for(let key in this){
 
 				if(key !== '_comment'){
 
-					console.log(`key: ${key}, value: ${this[key]};\n`);
+					char_str += `key: ${key}, value: ${this[key]};\n`;
 
 				} // /if
 
 			} // /for
 
-			return;
+			return char_str;
 
 		} // /Object.prototype._comment
 
@@ -139,7 +141,9 @@ $(document).on('load', function() {
 		// обработчик события клавиатуры
 		_keyboardEvent(o_ev){
 
-			switch(o_ev.keyCode){
+			let int_keyCode = o_ev.keyCode;
+
+			switch(int_keyCode){
 
 				
 				case link_out.link_o_player.o_controlUp:
@@ -159,7 +163,10 @@ $(document).on('load', function() {
 				default:
 				// остальные клавиши (оружие, супер-скорость и т.д.)
 
-					link_out.link_o_player._controlEvent('keyboardEvent', o_ev.keyCode);
+					// ссылка на массив в котором содержится: код клавиши = действие
+					let link_a_keyCodeActions = link_out.link_o_player.a_keyCodeActions;
+
+					link_out.link_o_player._controlEvent(link_a_keyCodeActions[int_keyCode]);
 
 
 			} // /switch
@@ -167,6 +174,127 @@ $(document).on('load', function() {
 			return;
 
 		} // /_keyboardEvent
+
+	}
+
+	//управление
+	class KeySet{
+
+		constructor(int_keyCode, case_action){
+		// код клавиши и действие для этой клавиши.
+		// если действие не задано, встанет по-умолчанию
+
+			// keyCode - номер элемента. Элемент - имя клавиши.
+			let a_keys = ["none",,,,,,,,"backspace","Tab",,,,"Enter",,,"Shift","Ctrl","Alt","Pause","CapsLock",,,,,,,"Esc",,,,,"Пробел","PageUp","PageDown","End","Home","&#8592;","&#8593;","&#8594;","&#8595;",,,,,"Insert","Delete",,"0","1","2","3","4","5","6","7","8","9",,,,,,,,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Left Win","Right Win","App",,,"Num 0","Num 1","Num 2","Num 3","Num 4","Num 5","Num 6","Num 7","Num 8","Num 9","Num *","Num +",,"Num -","Num .","Num /","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",,,,,,,,,,,,,,,,,,,,,"NumLock","ScrollLock",,,,,,,,,"PrintScreen",,,"Meta",,,,,,,,,,,,,,,,,,,,,,,,,,,,,";","=",",","-",".","/","~",,,,,,,,,,,,,,,,,,,,,,,,,,,"[","\\","]","\'"];
+
+			// ракеты
+			let a_rockets = ['A','B','C','D','E','F','G','H'];
+
+			// скиллы
+			let a_skills = ['I','J','K','L','M','N','O','P','superSpeed'];
+
+			// управление
+			let a_control = ['up','down'];
+
+			// проверка существования действия (ищем действие в каждом массиве действий)
+			this._hasAction = function(case_action){
+
+				if(!case_action) return false;
+
+				return !!((a_rockets.indexOf(case_action) + 1) || (a_skills.indexOf(case_action) + 1) || (a_control.indexOf(case_action) + 1));
+
+			} // /this._hasAction
+
+			// дефолтные назначения
+			this._setDefaultAction = function(char_keyName){
+
+				let case_action;
+
+				switch(this.char_keyName){
+
+					// ракеты
+					case '1': case_action = 'A'; break;
+					case '2': case_action = 'B'; break;
+					case '3': case_action = 'C'; break;
+					case '4': case_action = 'D'; break;
+					case '5': case_action = 'E'; break;
+					case '6': case_action = 'F'; break;
+					case '7': case_action = 'G'; break;
+					case '8': case_action = 'H'; break;
+
+					// скиллы
+					case 'Q': case_action = 'I'; break;
+					case 'W': case_action = 'J'; break;
+					case 'E': case_action = 'K'; break;
+					case 'R': case_action = 'L'; break;
+					case 'T': case_action = 'M'; break;
+					case 'Y': case_action = 'N'; break;
+					case 'U': case_action = 'O'; break;
+					case 'I': case_action = 'P'; break;
+
+					// вверх
+					case '&#8593;': case_action = 'up'; break;
+					// вних
+					case '&#8595;': case_action = 'down'; break;
+					// ускорение
+					case 'Shift': case_action = 'superSpeed'; break;
+
+				}
+
+				return case_action;
+
+			} // /this._setDefaultAction
+
+			// определение типа события
+			this._getType = function(case_action){
+
+				if(a_rockets.indexOf(case_action) + 1){
+
+					return 'rocket';
+
+				}
+				else if(a_skills.indexOf(case_action) + 1){
+
+					return 'skill';
+
+				}
+				else if(a_control.indexOf(case_action) + 1){
+
+					return 'control';
+
+				}
+				else{
+
+					return false;
+
+				}
+
+			} // /this._getType
+
+			// назначаем код клавиши на this
+			this.int_keyCode = int_keyCode;
+
+			// имя клавиши достаем из массива по keyCode
+			this.char_keyName = a_keys[int_keyCode];
+
+			// если действие есть и существует, записываем в this. Если нет, определяем дефолтное.
+			this.case_action = this._hasAction(case_action) ? case_action : this._setDefaultAction(case_action);
+
+			// тип события
+			this.case_type = this._getType(this.case_action);
+
+		} // /constructor
+
+		_comment(){
+
+			return `Класс keySet\n
+					Создает объект со следующими параметрами:\n
+					int_keyCode: код клавиши, пришедший от JQuery\n
+					char_keyName: имя клавиши, задано в массиве a_keys\n
+					case_action: действие для нажатия клавиши. Может принимать значения любых действий в битве. Например A - выстрел из пулемета, up - самолет летит вверх\n
+					case_type: тип действия. ракета, скилл, управление\n`;
+
+		}
 
 	}
 
@@ -179,11 +307,11 @@ $(document).on('load', function() {
 
 			Object.assign(this, o_params);
 
-
+			// код клавиши = объект
 
 		}
 
-		
+		_controlEvent()
 
 	}
 

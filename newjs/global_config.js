@@ -189,8 +189,6 @@ this._getAvailableWeaponsAndSkillsForPlanes = function(){
 			// присваиваем текущему самолету доступность текущего оружия
 			this.a_planes[p].o_availableWeapons[char_className] = bool_enabled;
 
-			console.log(char_className, bool_enabled);
-
 		}
 
 		// скиллы
@@ -224,39 +222,8 @@ this._getPricesParams = function(){
 		for(let count_step = link_currentParam.float_default; count_step < link_currentParam.float_maxValue; count_step++){
 
 			// инициализируем значения которые в конце добавятся в массив
-			let int_stars, int_rating;
-
-			// рассчитываем количество звезд для покупки исходя из текущего шага
-			function f_getStars(count_step){
-
-				// дефолная начальная стоимость - 10 звезд
-				let int_stars;
-
-				// рассчет по формуле
-				int_stars = (count_step * count_step) / 10;
-
-				// округляем в бОльшую сторону
-				int_stars = Math.ceil(int_stars);
-
-				return int_stars;
-
-			}
-
-			// рассчитываем рейтинг необходимый для покупки исходя из текущего шага
-			function f_getRating(count_step){
-
-				// дефолная начальная стоимость - 10 звезд
-				let int_rating;
-
-				// рассчет по формуле
-				int_rating = Math.pow(int_rating, 4) / 10;
-
-				// округляем в бОльшую сторону
-				int_rating = Math.ceil(int_rating);
-
-				return int_rating;
-
-			}
+			let int_stars = 0;
+			let int_rating = 0;
 
 			int_stars = f_getStars(count_step);
 			int_rating = f_getRating(count_step);
@@ -267,6 +234,40 @@ this._getPricesParams = function(){
 			link_currentParam.a_priceRating[count_step] = int_rating;
 
 		}
+
+	}
+
+	// рассчитываем количество звезд для покупки исходя из текущего шага
+	function f_getStars(count_step){
+
+		// дефолная начальная стоимость - 10 звезд
+		let int_stars;
+
+		// рассчет по формуле
+		int_stars = (count_step * count_step) / 10;
+
+		// округляем в бОльшую сторону
+		int_stars = Math.ceil(int_stars);	
+
+		return int_stars;
+
+	}
+
+	// рассчитываем рейтинг необходимый для покупки исходя из текущего шага
+	function f_getRating(count_step){
+
+		// дефолная начальная стоимость - 10 звезд
+		let int_rating;
+
+		// рассчет по формуле
+		int_rating = Math.pow(count_step, 4) / 10;
+
+		// округляем в бОльшую сторону до 100
+		int_rating = Math.ceil(int_rating);
+		// округляем до 100
+		int_rating = int_rating - int_rating%100;
+
+		return int_rating;
 
 	}
 
@@ -376,11 +377,7 @@ this._TEST = function(){
 
 	return;
 
-};
-
-this.o_testObject = {
-	int_a: 1
-};
+}; // /_TEST
 
 } // / Config
 
@@ -388,9 +385,11 @@ var CONFIG = new Config();
 
 // инициализируем доступность оружия и бонусов на самолетах
 CONFIG._getAvailableWeaponsAndSkillsForPlanes();
+console.log(CONFIG.a_planes);
 
 // инициализация цен и необходимого рейтинга для параметров
 CONFIG._getPricesParams();
+console.log(CONFIG.a_params);
 
 // тестируем на соответствие имена переменных
-CONFIG._TEST();
+// CONFIG._TEST();

@@ -112,7 +112,7 @@ this.a_planes = [	// все самолеты
 			a_rate: 				[1, 1.1, 1.2]
 		},
 		o_price: 				{ // стоимость каждого Mk
-			a_star: 				[100, 200, 300],
+			a_stars: 				[100, 200, 300],
 			a_metall: 				[5, 10, 15],
 			a_silicon: 				[5, 10, 15],
 			a_tnt: 					[5, 10, 15],
@@ -275,8 +275,8 @@ this._getPricesParams = function(){
 
 }; // /_getPricesParams
 
-// проверяет соответствие имя_переменной - тип_переменной
-this._TEST = function(){
+// проверяет соответствие имя_переменной - тип_переменной. Принимает имя, которое потом рекурсивно конкатенирует с остальными
+this._TEST = function(char_prevName){
 
 	// принимает значение и имя переменной, возвращает тип и соответствие имени
 	function f_getType(value, name){
@@ -329,6 +329,12 @@ this._TEST = function(){
 
 	}
 
+	// результат для return
+	var o_result = {
+		a_ok: [], // без ошибок
+		a_errors: [] // с ошибками
+	};
+
 	// циклом проходим по свойствам объекта
 	for(let char_prop in this){
 
@@ -338,20 +344,36 @@ this._TEST = function(){
 			// вызываем функцию, возвращающую реальный тип и соответствие
 			let o_type = f_getType(this[char_prop], char_prop);
 
-			// предупреждаем о несоответствии
-			if(!o_type.bool_equivalent){
+			// готовим строку для вставки
+			let char_stringForPush = `${char_prevName}.${char_prop}: ${o_type.char_type}, ${o_type.bool_equivalent}`;
 
-				console.log('!!!');
+			// если примитив - выведем еще значение
+			if(o_type.char_type == 'string' || o_type.char_type == 'number' || o_type.char_type == 'boolean'){
+
+				char_stringForPush += `: '${this[char_prop]}'`;
 
 			}
 
-			// выводим результат теста
-			console.log(`${char_prop}: ${o_type.char_type}, ${o_type.bool_equivalent}`);
+			// заводим ошибку
+			if(!o_type.bool_equivalent){
+
+				o_result.a_errors.push(char_stringForPush);
+
+			}
+			// записываем без ошибок
+			else{
+
+				o_result.a_ok.push(char_stringForPush);
+
+			}
 
 			// если проверяемое значение является объектом - заглядываем внутрь (рекурсивно)
 			if(o_type.char_type == 'object'){
 
-				CONFIG._TEST.call(this[char_prop]);
+				let o_recursionArr = CONFIG._TEST.call(this[char_prop], `	${char_prevName}.${char_prop}`);
+
+				o_result.a_ok = o_result.a_ok.concat(o_recursionArr.a_ok);
+				o_result.a_errors = o_result.a_errors.concat(o_recursionArr.a_errors);
 
 			}
 			// если проверяемое значение является массивом - заглядываем внутрь (рекурсивно)
@@ -363,7 +385,10 @@ this._TEST = function(){
 					// и проверяем. Если элемент массива - объект, то заглядываем туда еще раз
 					if(typeof this[char_prop][i] == 'object'){
 
-						CONFIG._TEST.call(this[char_prop][i]);
+						let o_recursionArr = CONFIG._TEST.call(this[char_prop][i], `	${char_prevName}.${char_prop}[${i}]`);
+
+						o_result.a_ok = o_result.a_ok.concat(o_recursionArr.a_ok);
+						o_result.a_errors = o_result.a_errors.concat(o_recursionArr.a_errors);
 
 					}
 
@@ -375,9 +400,12 @@ this._TEST = function(){
 
 	}
 
-	return;
+	return o_result;
 
 }; // /_TEST
+
+this.o_ethalon = {int_a:1};
+this.o_ethalonFalse = 1;
 
 } // / Config
 
@@ -385,11 +413,20 @@ var CONFIG = new Config();
 
 // инициализируем доступность оружия и бонусов на самолетах
 CONFIG._getAvailableWeaponsAndSkillsForPlanes();
-console.log(CONFIG.a_planes);
+console.log('a_planes:', CONFIG.a_planes);
 
 // инициализация цен и необходимого рейтинга для параметров
 CONFIG._getPricesParams();
-console.log(CONFIG.a_params);
+console.log('a_params:', CONFIG.a_params);
 
-// тестируем на соответствие имена переменных
-// CONFIG._TEST();
+
+
+// тестируем на соответствие имена переменных. Принимает имя, которое потом рекурсивно конкатенирует с остальными
+{
+	let float_time = window.performance.now();
+
+	let test = CONFIG._TEST('CONFIG');
+
+	console.log('test:', test);
+	console.log(`Тест конфига занял ${window.performance.now() - float_time} мс.`);
+}

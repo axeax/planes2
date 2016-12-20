@@ -5,32 +5,263 @@
 "use strict";
 
 var Config = function(){
+this.o_other = { 	// то что не группируется
 
+	char_gameName: 'Авиамясо: Битва за территории'
+
+};
+this.o_generalization = { 	// обобщаяющий объект содержит обобщающие данные
+
+	a_technologiesTimes: 		[], // формируется из функции _getTechnologiesTimes
+	a_technologiesTimesText: 	[], // формируется из функции _getTechnologiesTimes, для отображения на кнопке
+	o_technologiesPrices: 		{
+		a_stars: 					[10,30,50,100,200], // массив цен в звездах для каждого уровня технологии
+		a_diamonds: 				[3,5,10,20,50] // массив цен в алмазах для каждого уровня технологии
+	}
+
+}
 this.a_medails = [	// все медали
 	{ 	// пример одной медали
 
-		char_nameText: 			'name',
-		char_questText: 		'сыграть 10 раз | добить пулеметом',
-		char_quest: 			'win | play | computer win ...',
-		int_numInArray: 		0, // номер этого элемента в массиве всех
-		int_progress: 			3,
-		int_fullProgress: 		10,
-		a_award: 				[
-			{
-				char_type: 			'metall',
-				int_value: 			10
-			},
-			{
-				char_type: 			'stars',
-				int_value: 			20
-			}
-		],
-		char_wallMessageText: 	'текст для стены',
-		char_wallImageSrc: 		'/path/to/file',
-		char_interfaceImageSrc: '/path/to/file'
+		char_nameText: 			'Медаль Преданного IV Ранга',
+		char_questText: 		'сыграть ${this._declOfNum(o_tplValues.int_questSuccess, [" бой", " боя", " боев"])}',
+		char_quest: 			'play',
+		int_questSuccess: 		10, // количество char_quest для получения медали
+		//int_numInArray: 		0, // номер этого элемента в массиве всехб сгенерируется автоматически
+		o_award: 				{ // награда. Тут не будет оружия, только звезды, ресурсы и рейтинг
+			int_diamonds: 			10,
+			int_stars: 				30,
+		},
+		char_wallMessageText: 	'За ${this._declOfNum(o_tplValues.int_questSuccess, [" битву", " битвы", " битв"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
 
-	}
-	// остальные медали
+	},
+	{
+
+		char_nameText: 			'Медаль Преданного III Ранга',
+		char_questText: 		'сыграть ${this._declOfNum(o_tplValues.int_questSuccess, [" бой", " боя", " боев"])}',
+		char_quest: 			'play',
+		int_questSuccess: 		50,
+		o_award: 				{
+			int_metall: 			10,
+			int_silicon: 			10,
+			int_tnt: 				10,
+			int_diamonds: 			10
+		},
+		char_wallMessageText: 	'За ${this._declOfNum(o_tplValues.int_questSuccess, [" битву", " битвы", " битв"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Преданного II Ранга',
+		char_questText: 		'сыграть ${this._declOfNum(o_tplValues.int_questSuccess, [" бой", " боя", " боев"])}',
+		char_quest: 			'play',
+		int_questSuccess: 		100,
+		o_award: 				{
+			int_diamonds: 			30,
+			int_stars: 				100,
+		},
+		char_wallMessageText: 	'За ${this._declOfNum(o_tplValues.int_questSuccess, [" битву", " битвы", " битв"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Преданного I Ранга',
+		char_questText: 		'сыграть ${this._declOfNum(o_tplValues.int_questSuccess, [" бой", " боя", " боев"])}',
+		char_quest: 			'play',
+		int_questSuccess: 		500,
+		o_award: 				{
+			int_metall: 			50,
+			int_silicon: 			50,
+			int_tnt: 				50,
+			int_diamonds: 			50
+		},
+		char_wallMessageText: 	'За ${this._declOfNum(o_tplValues.int_questSuccess, [" битву", " битвы", " битв"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Преданного Высшего Ранга',
+		char_questText: 		'сыграть ${this._declOfNum(o_tplValues.int_questSuccess, [" бой", " боя", " боев"])}',
+		char_quest: 			'play',
+		int_questSuccess: 		1000,
+		o_award: 				{
+			int_metall: 			100,
+			int_silicon: 			100,
+			int_tnt: 				100,
+			int_diamonds: 			100,
+			int_stars: 				1000
+		},
+		char_wallMessageText: 	'За ${this._declOfNum(o_tplValues.int_questSuccess, [" битву", " битвы", " битв"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Победителя IV Ранга',
+		char_questText: 		'победить в ${this._declOfNum(o_tplValues.int_questSuccess, [" бою", " боях", " боях"])}',
+		char_quest: 			'win',
+		int_questSuccess: 		10,
+		o_award: 				{
+			int_multiplierRating: 	5
+		},
+		char_wallMessageText: 	'За победу в ${this._declOfNum(o_tplValues.int_questSuccess, [" битве", " битвах", " битвах"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Победителя III Ранга',
+		char_questText: 		'победить в ${this._declOfNum(o_tplValues.int_questSuccess, [" бою", " боях", " боях"])}',
+		char_quest: 			'win',
+		int_questSuccess: 		50,
+		o_award: 				{
+			int_multiplierRating: 	10
+		},
+		char_wallMessageText: 	'За победу в ${this._declOfNum(o_tplValues.int_questSuccess, [" битве", " битвах", " битвах"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Победителя II Ранга',
+		char_questText: 		'победить в ${this._declOfNum(o_tplValues.int_questSuccess, [" бою", " боях", " боях"])}',
+		char_quest: 			'win',
+		int_questSuccess: 		100,
+		o_award: 				{
+			int_multiplierRating: 	20
+		},
+		char_wallMessageText: 	'За победу в ${this._declOfNum(o_tplValues.int_questSuccess, [" битве", " битвах", " битвах"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Победителя I Ранга',
+		char_questText: 		'победить в ${this._declOfNum(o_tplValues.int_questSuccess, [" бою", " боях", " боях"])}',
+		char_quest: 			'win',
+		int_questSuccess: 		500,
+		o_award: 				{
+			int_multiplierRating: 	35
+		},
+		char_wallMessageText: 	'За победу в ${this._declOfNum(o_tplValues.int_questSuccess, [" битве", " битвах", " битвах"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Победителя Высшего Ранга',
+		char_questText: 		'победить в ${this._declOfNum(o_tplValues.int_questSuccess, [" бою", " боях", " боях"])}',
+		char_quest: 			'win',
+		int_questSuccess: 		1000,
+		o_award: 				{
+			int_multiplierRating: 	50
+		},
+		char_wallMessageText: 	'За победу в ${this._declOfNum(o_tplValues.int_questSuccess, [" битве", " битвах", " битвах"])} я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Награда за упорство',
+		char_questText: 		'добить врага пулеметом',
+		char_quest: 			'A',
+		int_questSuccess: 		1,
+		o_award: 				{
+			int_stars: 	 			50
+		},
+		char_wallMessageText: 	'${o_tplValues.char_nameText} стала моей! Я получил ее за добивание врага из пулемета в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Младшего Мародера',
+		char_questText: 		'наворовать ${this._declOfNum(o_tplValues.int_questSuccess, [" литр", " литра", " литров"])} топлива',
+		char_quest: 			'fuel',
+		int_questSuccess: 		500,
+		o_award: 				{
+			int_multiplierFuel:	 	50
+		},
+		char_wallMessageText: 	'За воровство ${this._declOfNum(o_tplValues.int_questSuccess, [" литра", " литров", " литров"])} топлива я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Старшего Мародера',
+		char_questText: 		'наворовать ${this._declOfNum(o_tplValues.int_questSuccess, [" литр", " литра", " литров"])} топлива',
+		char_quest: 			'fuel',
+		int_questSuccess: 		1000,
+		o_award: 				{
+			bool_infinityFuel: 	 	true
+		},
+		char_wallMessageText: 	'За воровство ${this._declOfNum(o_tplValues.int_questSuccess, [" литра", " литров", " литров"])} топлива я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Выжившего',
+		char_questText: 		'победить с 1 жизнью',
+		char_quest: 			'life',
+		int_questSuccess: 		1,
+		o_award: 				{
+			int_metall: 			50,
+			int_silicon: 			50,
+			int_tnt: 				50,
+			int_diamonds: 			50,
+			int_stars: 				50
+		},
+		char_wallMessageText: 	'За победу с 1 жизнью я получил ${o_tplValues.char_nameText} в игре ${this.o_other.char_gameName}'
+
+	},
+	{
+
+		char_nameText: 			'Серебряная Медаль за Отвагу',
+		char_questText: 		'набрать ${o_tplValues.int_questSuccess} рейтинга',
+		char_quest: 			'rating',
+		int_questSuccess: 		10000,
+		o_award: 				{
+			int_metall: 			50,
+			int_silicon: 			50,
+			int_tnt: 				50,
+			int_diamonds: 			50,
+			int_stars: 				50
+		},
+		char_wallMessageText: 	'Я набрал ${o_tplValues.int_questSuccess} рейтинга в игре ${this.o_other.char_gameName} и получил Серебряную Медаль за Отвагу'
+
+	},
+	{
+
+		char_nameText: 			'Золотая Медаль за Отвагу',
+		char_questText: 		'набрать ${o_tplValues.int_questSuccess} рейтинга',
+		char_quest: 			'rating',
+		int_questSuccess: 		100000,
+		o_award: 				{
+			int_metall: 			50,
+			int_silicon: 			50,
+			int_tnt: 				50,
+			int_diamonds: 			50,
+			int_stars: 				50
+		},
+		char_wallMessageText: 	'Я набрал ${o_tplValues.int_questSuccess} рейтинга в игре ${this.o_other.char_gameName} и получил Золотую Медаль за Отвагу'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Пятого Дня',
+		char_questText: 		'играть ${this._declOfNum(o_tplValues.int_questSuccess, [" день", " дня", " дней"])} подряд',
+		char_quest: 			'days',
+		int_questSuccess: 		5,
+		o_award: 				{
+			int_multiplierRating: 	3
+		},
+		char_wallMessageText: 	'Я играл ${this._declOfNum(o_tplValues.int_questSuccess, [" день", " дня", " дней"])} подряд в ${this.o_other.char_gameName} и получил ${o_tplValues.char_nameText}'
+
+	},
+	{
+
+		char_nameText: 			'Медаль Десятого Дня',
+		char_questText: 		'играть ${this._declOfNum(o_tplValues.int_questSuccess, [" день", " дня", " дней"])} подряд',
+		char_quest: 			'days',
+		int_questSuccess: 		10,
+		o_award: 				{
+			int_multiplierRating: 	5
+		},
+		char_wallMessageText: 	'Я играл ${this._declOfNum(o_tplValues.int_questSuccess, [" день", " дня", " дней"])} подряд в ${this.o_other.char_gameName} и получил ${o_tplValues.char_nameText}'
+
+	},
 ];
 this.a_weapons = [	// все оружие
 	{ 	// пример одной ракеты
@@ -61,7 +292,7 @@ this.a_weapons = [	// все оружие
 			a_powerful: 		[true, true, true],
 			a_maneuver: 		[true, true, true],
 			a_secret: 			[true, true, true]
-		}, 
+		},
 		char_about: 'Пулемёт&nbsp;&mdash; оружие &laquo;быстрого огня&raquo;. Скорость стрельбы очень высокая, пуля летит достаточно быстро, но&nbsp;точность и&nbsp;убойность оставляют желать лучшего. Больше всего подходит для &laquo;добивания&raquo; соперника. При попадании не&nbsp;оказывает никакого дополнительного воздействия на&nbsp;самолёт.',
 		char_buyButtonText: 'Купить ${this._declOfNum(o_tplValues.int_purchase, [" патрон", " патрона", " патронов"])} за ${this._declOfNum(o_tplValues.int_price, [" звезду", " звезды", " звезд"])}',
 		char_buySuccessfullyText: 'Покупка ${this._declOfNum(o_tplValues.int_purchase, [" патрона", " патронов", " патронов"])} к пулемету прошла успешно',
@@ -180,13 +411,7 @@ this.a_technologies = [ 	// все парметри технологий
 
 		char_nameText: 		'Усовершенствование микропроцессоров',
 		char_about: 		'Разработка новых микропроцессоров&nbsp;&mdash; одно из&nbsp;основных направлений, над которым трудятся ученые. Новые, более быстрые процессоры позволяют получать доступ к&nbsp;базе данных противника, и&nbsp;перед вылетом узнавать некоторых характерисики самолёта. С&nbsp;каждым уровнем развития технологии можно узнать больше о&nbsp;самолёте соперника.',
-		int_numInArray: 	0, // номер этого элемента в массиве всех
-		o_prices: 			{
-			a_stars: 			[10,30,50,100,200], // массив цен в звездах для каждого уровня технологии
-			a_diamonds: 		[3,5,10,20,50] // массив цен в алмазах для каждого уровня технологии
-		},
-		a_times: 			[], // формируется из функции _getTechnologiesTimes
-		a_timesText: 		[] // формируется из функции _getTechnologiesTimes, для отображения на кнопке
+		int_numInArray: 	0 // номер этого элемента в массиве всех
 
 	}
 ];
@@ -282,7 +507,27 @@ this._weaponsAndSkillsTextGenerator = function(){
 
 	return;
 
-};
+}; // /_weaponsAndSkillsTextGenerator
+
+// функция генерирует текст по шаблону для медалей
+this._medailsTextGenerator = function(){
+
+	// обход по медалям
+	for(let i = 0; i < this.a_medails.length; i++){
+
+		// готовим подстановки для _postTemplate
+		let o_tplValues = {
+			char_nameText: this.a_medails[i].char_nameText,
+			int_questSuccess: this.a_medails[i].int_questSuccess
+		}
+
+		this.a_medails[i].char_questText = this._postTemplate(this.a_medails[i].char_questText, o_tplValues);
+		this.a_medails[i].char_wallMessageText = this._postTemplate(this.a_medails[i].char_wallMessageText, o_tplValues);
+
+	}
+	return;
+
+}; // /_medailsTextGenerator
 
 // постобработка шаблона. char_tpl - строка-шаблон, o_tplValues - значения для подстановки в строке-шаблоне
 // чтобы в шаблон подставились подстановки, в шаблоне должно быть o_tplValues.valueName
@@ -290,7 +535,7 @@ this._postTemplate = function(char_tpl, o_tplValues){
 
 	return eval("`" + char_tpl + "`");
 
-}
+} // /_postTemplate
 
 // функция рассчитывает все цены и рейтинги для параметров самолета
 this._getPricesParams = function(){
@@ -358,31 +603,25 @@ this._getPricesParams = function(){
 // функция рассчитывает время изучения технологии на каждом уровне
 this._getTechnologiesTimes = function(){
 
-	for(let t = 0; t < this.a_technologies.length; t++){
+	for(let l = 0; l < this.o_generalization.o_technologiesPrices.a_diamonds.length; l++){
 
-		let o_currentTechnology = this.a_technologies[t];
+		// время изучения технологии в миллисекундах и часах
+		// алмазы * 4 == часы
+		// алмазы * 4 * 1000 * 60 * 60
+		let int_hours = this.o_generalization.o_technologiesPrices.a_diamonds[l] * 4;
+		let int_timeMs = int_hours * 1000 * 60 * 60;
 
-		for(let l = 0; l < o_currentTechnology.o_prices.a_diamonds.length; l++){
+		// делаем фразу Х часов
+		let char_timeHourText = this._declOfNum(int_hours, [' час', ' часа', ' часов']);
 
-			// время изучения технологии в миллисекундах и часах
-			// алмазы * 4 == часы
-			// алмазы * 4 * 1000 * 60 * 60
-			let int_hours = o_currentTechnology.o_prices.a_diamonds[l] * 4;
-			let int_timeMs = int_hours * 1000 * 60 * 60;
-
-			// делаем фразу Х часов
-			let char_timeHourText = this._declOfNum(int_hours, [' час', ' часа', ' часов']);
-
-			o_currentTechnology.a_times.push(int_timeMs);
-			o_currentTechnology.a_timesText.push(char_timeHourText);
-
-		}
+		this.o_generalization.a_technologiesTimes.push(int_timeMs);
+		this.o_generalization.a_technologiesTimesText.push(char_timeHourText);
 
 	}
 
 	return;
 
-};
+}; // /_getTechnologiesTimes
 
 // проверяет соответствие имя_переменной - тип_переменной. Принимает имя, которое потом рекурсивно конкатенирует с остальными
 this._TEST = function(char_prevName){
@@ -519,7 +758,7 @@ this._declOfNum = function(float_number, a_titles) {
     let a_cases = [2, 0, 1, 1, 1, 2];  
     return float_number + a_titles[ (float_number%100>4 && float_number%100<20)? 2 : a_cases[(float_number%10<5)?float_number%10:5] ];
 
-}
+} // /_declOfNum
 
 this.o_ethalon = {int_a:1};
 this.o_ethalonFalse = 1;
@@ -538,12 +777,16 @@ console.log('a_params:', CONFIG.a_params);
 
 // инициализируем время изучения технологии, в миллисекундах и часах для текста
 CONFIG._getTechnologiesTimes();
-console.log('a_technologies:', CONFIG.a_technologies);
+console.log('_getTechnologiesTimes:o_generalization:', CONFIG.o_generalization);
 
 // обработка шаблонов в оружии и скиллах
 CONFIG._weaponsAndSkillsTextGenerator();
 console.log('a_weapons:', CONFIG.a_weapons);
 console.log('a_skills:', CONFIG.a_skills);
+
+// функция генерирует текст по шаблону для медалей
+CONFIG._medailsTextGenerator();
+console.log('a_medails:', CONFIG.a_medails);
 
 // тестируем на соответствие имена переменных. Принимает имя, которое потом рекурсивно конкатенирует с остальными
 {

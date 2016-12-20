@@ -1,6 +1,6 @@
 /* Файл с глобальной конфигурацией, работающий и на клиенте и на сервере */
 /* НЕ имеет методов работы с интерфейсом. Для работы с интерфейсом существует отдельный класс */
-/* Существующие методы работают только с самим объектом конфига для объединения повторяющихся данных */
+/* Существующие методы работают ТОЛЬКО с самим объектом конфига для объединения повторяющихся данных и генерации существующих */
 
 "use strict";
 
@@ -55,14 +55,16 @@ this.a_weapons = [	// все оружие
 			a_diamonds: 		[10, 15]
 		},
 		o_availableOnPlanes: { // доступно на самолетах (Mk 1, Mk2, Mk3)
-			a_standard: 		[false, true, true],
+			a_standard: 		[true, true, true],
 			a_fast: 			[true, true, true],
 			a_protected: 		[true, true, true],
 			a_powerful: 		[true, true, true],
 			a_maneuver: 		[true, true, true],
 			a_secret: 			[true, true, true]
 		}, 
-		char_about: 		'Пулемёт&nbsp;&mdash; оружие &laquo;быстрого огня&raquo;. Скорость стрельбы очень высокая, пуля летит достаточно быстро, но&nbsp;точность и&nbsp;убойность оставляют желать лучшего. Больше всего подходит для &laquo;добивания&raquo; соперника. При попадании не&nbsp;оказывает никакого дополнительного воздействия на&nbsp;самолёт.'
+		char_about: 'Пулемёт&nbsp;&mdash; оружие &laquo;быстрого огня&raquo;. Скорость стрельбы очень высокая, пуля летит достаточно быстро, но&nbsp;точность и&nbsp;убойность оставляют желать лучшего. Больше всего подходит для &laquo;добивания&raquo; соперника. При попадании не&nbsp;оказывает никакого дополнительного воздействия на&nbsp;самолёт.',
+		char_buyButtonText: 'Купить ${this._declOfNum(o_tplValues.int_purchase, [" патрон", " патрона", " патронов"])} за ${this._declOfNum(o_tplValues.int_price, [" звезду", " звезды", " звезд"])}',
+		char_buySuccessfullyText: 'Покупка ${this._declOfNum(o_tplValues.int_purchase, [" патрона", " патронов", " патронов"])} к пулемету прошла успешно',
 
 	}
 	// остальные ракеты
@@ -80,14 +82,16 @@ this.a_skills = [	// все скиллы
 		int_price: 			1, // стоимость в звездах
 		int_purchase: 		5, // количество при покупке
 		o_availableOnPlanes: { // доступно на самолетах (Mk 1, Mk2, Mk3)
-			a_standard: 		[true, false, true],
+			a_standard: 		[true, true, true],
 			a_fast: 			[true, true, true],
 			a_protected: 		[true, true, true],
 			a_powerful: 		[true, true, true],
 			a_maneuver: 		[true, true, true],
 			a_secret: 			[true, true, true]
 		}, 
-		char_about: 		'Аптечка восстанавливает 10&nbsp;жизней прямо во&nbsp;время боя. Рекомендуется использовать когда количество жизней уже меньше&nbsp;25.'
+		char_about: 'Аптечка восстанавливает 10&nbsp;жизней прямо во&nbsp;время боя. Рекомендуется использовать когда количество жизней уже меньше&nbsp;25.',
+		char_buyButtonText: 'Купить ${this._declOfNum(o_tplValues.int_purchase, [" аптечку", " аптечки", " аптечек"])} за ${this._declOfNum(o_tplValues.int_price, [" звезду", " звезды", " звезд"])}',
+		char_buySuccessfullyText: 'Покупка ${this._declOfNum(o_tplValues.int_purchase, [" аптечки", " аптечек", " аптечек"])} прошла успешно',
 
 	}
 	// остальные скиллы
@@ -175,7 +179,7 @@ this.a_technologies = [ 	// все парметри технологий
 	{ 	// пример одной технологии
 
 		char_nameText: 		'Усовершенствование микропроцессоров',
-		char_about: 		'Разработка новых микропроцессоров&nbsp;&mdash; одно из&nbsp;основных направлений, над которым трудятся ученые. Новые, более быстрые процессоры позволяют получать доступ к&nbsp;базу данных противника, и&nbsp;перед вылетом узнавать некоторых характерисики самолёта. С&nbsp;каждым уровнем развития технологии можно узнать больше о&nbsp;самолёте соперника.',
+		char_about: 		'Разработка новых микропроцессоров&nbsp;&mdash; одно из&nbsp;основных направлений, над которым трудятся ученые. Новые, более быстрые процессоры позволяют получать доступ к&nbsp;базе данных противника, и&nbsp;перед вылетом узнавать некоторых характерисики самолёта. С&nbsp;каждым уровнем развития технологии можно узнать больше о&nbsp;самолёте соперника.',
 		int_numInArray: 	0, // номер этого элемента в массиве всех
 		o_prices: 			{
 			a_stars: 			[10,30,50,100,200], // массив цен в звездах для каждого уровня технологии
@@ -244,6 +248,49 @@ this._getAvailableWeaponsAndSkillsForPlanes = function(){
 	return;
 
 }; // /_getAvailableWeaponsAndSkillsForPlanes
+
+// функция генерирует текст по шаблону для оружия и скиллов
+this._weaponsAndSkillsTextGenerator = function(){
+
+	// обход по оружию
+	for(let i = 0; i < this.a_weapons.length; i++){
+
+		// готовим подстановки для _postTemplate
+		let o_tplValues = {
+			int_purchase: this.a_weapons[i].int_purchase,
+			int_price: this.a_weapons[i].int_price
+		}
+
+		this.a_weapons[i].char_buyButtonText = this._postTemplate(this.a_weapons[i].char_buyButtonText, o_tplValues);
+		this.a_weapons[i].char_buySuccessfullyText = this._postTemplate(this.a_weapons[i].char_buySuccessfullyText, o_tplValues);
+
+	}
+
+	// обход по скиллам
+	for(let i = 0; i < this.a_skills.length; i++){
+
+		// готовим подстановки для _postTemplate
+		let o_tplValues = {
+			int_purchase: this.a_skills[i].int_purchase,
+			int_price: this.a_skills[i].int_price
+		}
+
+		this.a_skills[i].char_buyButtonText = this._postTemplate(this.a_skills[i].char_buyButtonText, o_tplValues);
+		this.a_skills[i].char_buySuccessfullyText = this._postTemplate(this.a_skills[i].char_buySuccessfullyText, o_tplValues);
+
+	}
+
+	return;
+
+};
+
+// постобработка шаблона. char_tpl - строка-шаблон, o_tplValues - значения для подстановки в строке-шаблоне
+// чтобы в шаблон подставились подстановки, в шаблоне должно быть o_tplValues.valueName
+this._postTemplate = function(char_tpl, o_tplValues){
+
+	return eval("`" + char_tpl + "`");
+
+}
 
 // функция рассчитывает все цены и рейтинги для параметров самолета
 this._getPricesParams = function(){
@@ -332,6 +379,8 @@ this._getTechnologiesTimes = function(){
 		}
 
 	}
+
+	return;
 
 };
 
@@ -490,6 +539,11 @@ console.log('a_params:', CONFIG.a_params);
 // инициализируем время изучения технологии, в миллисекундах и часах для текста
 CONFIG._getTechnologiesTimes();
 console.log('a_technologies:', CONFIG.a_technologies);
+
+// обработка шаблонов в оружии и скиллах
+CONFIG._weaponsAndSkillsTextGenerator();
+console.log('a_weapons:', CONFIG.a_weapons);
+console.log('a_skills:', CONFIG.a_skills);
 
 // тестируем на соответствие имена переменных. Принимает имя, которое потом рекурсивно конкатенирует с остальными
 {

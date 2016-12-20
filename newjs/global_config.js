@@ -54,13 +54,13 @@ this.a_weapons = [	// все оружие
 			a_tnt: 				[10, 15],
 			a_diamonds: 		[10, 15]
 		},
-		o_availableOnPlanes: { // доступно на самолетах
-			bool_standard: 		true,
-			bool_fast: 			true,
-			bool_protected: 	true,
-			bool_powerful: 		true,
-			bool_maneuver: 		true,
-			bool_secret: 		true
+		o_availableOnPlanes: { // доступно на самолетах (Mk 1, Mk2, Mk3)
+			a_standard: 		[false, true, true],
+			a_fast: 			[true, true, true],
+			a_protected: 		[true, true, true],
+			a_powerful: 		[true, true, true],
+			a_maneuver: 		[true, true, true],
+			a_secret: 			[true, true, true]
 		}, 
 		char_about: 		'Пулемёт&nbsp;&mdash; оружие &laquo;быстрого огня&raquo;. Скорость стрельбы очень высокая, пуля летит достаточно быстро, но&nbsp;точность и&nbsp;убойность оставляют желать лучшего. Больше всего подходит для &laquo;добивания&raquo; соперника. При попадании не&nbsp;оказывает никакого дополнительного воздействия на&nbsp;самолёт.'
 
@@ -79,13 +79,13 @@ this.a_skills = [	// все скиллы
 		int_rating: 		1500, // рейтинг для покупки
 		int_price: 			1, // стоимость в звездах
 		int_purchase: 		5, // количество при покупке
-		o_availableOnPlanes: { // доступно на самолетах
-			bool_standard: 		true,
-			bool_fast: 			true,
-			bool_protected: 	true,
-			bool_powerful: 		true,
-			bool_maneuver: 		true,
-			bool_secret: 		true
+		o_availableOnPlanes: { // доступно на самолетах (Mk 1, Mk2, Mk3)
+			a_standard: 		[true, false, true],
+			a_fast: 			[true, true, true],
+			a_protected: 		[true, true, true],
+			a_powerful: 		[true, true, true],
+			a_maneuver: 		[true, true, true],
+			a_secret: 			[true, true, true]
 		}, 
 		char_about: 		'Аптечка восстанавливает 10&nbsp;жизней прямо во&nbsp;время боя. Рекомендуется использовать когда количество жизней уже меньше&nbsp;25.'
 
@@ -126,31 +126,31 @@ this.a_planes = [	// все самолеты
 			a_technology4: 			[1,2,3], // система наведения
 			a_technology5: 			[1,2,3], // искусственный интеллект
 		},
-		o_availableWeapons: 	{ // доступное оружие на самолете инициализируется функцией _getAvailableWeaponsAndSkillsForPlanes
+		o_availableWeapons: 	{ // доступное оружие на самолете (Mk 1, Mk2, Mk3) инициализируется функцией _getAvailableWeaponsAndSkillsForPlanes
 			/*
 
-			@bool_A: 				true,
-			@bool_B: 				true,
-			@bool_C: 				true,
-			@bool_D: 				true,
-			@bool_E: 				false,
-			@bool_F: 				false,
-			@bool_G: 				false,
-			@bool_H: 				false
+			@a_A: 					[true, true, true],
+			@a_B: 					[true, true, true],
+			@a_C: 					[true, true, true],
+			@a_D: 					[true, true, true],
+			@a_E: 					[false, true, true],
+			@a_F: 					[false, true, true],
+			@a_G: 					[false, true, true],
+			@a_H: 					[false, true, true]
 
 			*/
 		},
-		o_availableSkills: 		{ // доступные скиллы на самолете инициализируется функцией _getAvailableWeaponsAndSkillsForPlanes
+		o_availableSkills: 		{ // доступные скиллы на самолете (Mk 1, Mk2, Mk3) инициализируется функцией _getAvailableWeaponsAndSkillsForPlanes
 			/*
 
-			@bool_I: 				true,
-			@bool_J: 				true,
-			@bool_K: 				true,
-			@bool_L: 				true,
-			@bool_M: 				false,
-			@bool_N: 				false,
-			@bool_O: 				false,
-			@bool_P: 				false
+			@a_I: 					[true, true, true],
+			@a_J: 					[true, true, true],
+			@a_K: 					[true, true, true],
+			@a_L: 					[true, true, true],
+			@a_M: 					[false, true, true],
+			@a_N: 					[false, true, true],
+			@a_O: 					[false, true, true],
+			@a_P: 					[false, true, true]
 
 			*/
 		}	
@@ -163,6 +163,7 @@ this.a_params = [	// все параметры самолета. Парамет�
 
 		char_nameText: 		'скорость',
 		char_nameClass: 	'speed',
+		int_numInArray: 	0, // номер этого элемента в массиве всех
 		float_default: 		10,
 		float_maxValue: 	30,
 		a_priceStars: 		[], // массив цен по каждому шагу, формируется функцией _getPricesParams
@@ -170,39 +171,71 @@ this.a_params = [	// все параметры самолета. Парамет�
 
 	}
 ];
+this.a_technologies = [ 	// все парметри технологий
+	{ 	// пример одной технологии
+
+		char_nameText: 		'Усовершенствование микропроцессоров',
+		char_about: 		'Разработка новых микропроцессоров&nbsp;&mdash; одно из&nbsp;основных направлений, над которым трудятся ученые. Новые, более быстрые процессоры позволяют получать доступ к&nbsp;базу данных противника, и&nbsp;перед вылетом узнавать некоторых характерисики самолёта. С&nbsp;каждым уровнем развития технологии можно узнать больше о&nbsp;самолёте соперника.',
+		int_numInArray: 	0, // номер этого элемента в массиве всех
+		o_prices: 			{
+			a_stars: 			[10,30,50,100,200], // массив цен в звездах для каждого уровня технологии
+			a_diamonds: 		[3,5,10,20,50] // массив цен в алмазах для каждого уровня технологии
+		},
+		a_times: 			[], // формируется из функции _getTechnologiesTimes
+		a_timesText: 		[] // формируется из функции _getTechnologiesTimes, для отображения на кнопке
+
+	}
+];
 
 // функция преобразует o_availableOnPlanes из a_skills и a_weapons в o_availableWeapons и в o_availableSkills
 this._getAvailableWeaponsAndSkillsForPlanes = function(){
 
+	// самолеты
 	for (let p = 0; p < this.a_planes.length; p++) {
 
 		// оружие
 		for(let w = 0; w < this.a_weapons.length; w++){
 
 			// имя класса оружия
-			let char_className = 'bool_' + this.a_weapons[w].char_class;
+			let char_className = 'a_' + this.a_weapons[w].char_class;
 
-			// доступно ли оружие на текущем самолете
-			// оружие.доступностьНаСамолетах[имяСамолетаБеретсяТекущее];
-			let bool_enabled = this.a_weapons[w].o_availableOnPlanes['bool_' + this.a_planes[p].char_class];
+			// оружие[текущее].доступностьНаСамолетах[имяСамолетаБеретсяТекущее];
+			let a_enabled = this.a_weapons[w].o_availableOnPlanes['a_' + this.a_planes[p].char_class];
 
-			// присваиваем текущему самолету доступность текущего оружия
-			this.a_planes[p].o_availableWeapons[char_className] = bool_enabled;
+			// собираем массив доступно ли оружие на текущем самолете (в цикле перебирается Mk1, Mk2, Mk3)
+			let a_availableWeapons = [];
+			for(let mk = 0; mk < a_enabled.length; mk++){
+
+				// загоняем в массив доступность текущего оружия Mk на текущем самолете Mk
+				a_availableWeapons.push(a_enabled[mk]);
+
+			}
+
+			// присваиваем текущему самолету Mk доступность текущего оружия
+			this.a_planes[p].o_availableWeapons[char_className] = a_availableWeapons;
 
 		}
 
 		// скиллы
-		for(let s = 0; s < this.a_skills.length; s++){
+		for(let w = 0; w < this.a_skills.length; w++){
 
 			// имя класса скилла
-			let char_className = 'bool_' + this.a_skills[s].char_class;
+			let char_className = 'a_' + this.a_skills[w].char_class;
 
-			// доступен ли скилл на текущем самолете
-			// скилл.доступностьНаСамолетах[имяСамолетаБеретсяТекущее];
-			let bool_enabled = this.a_skills[s].o_availableOnPlanes['bool_' + this.a_planes[p].char_class];
+			// скилл[текущее].доступностьНаСамолетах[имяСамолетаБеретсяТекущее];
+			let a_enabled = this.a_skills[w].o_availableOnPlanes['a_' + this.a_planes[p].char_class];
 
-			// присваиваем текущему самолету доступность текущего скилла
-			this.a_planes[p].o_availableSkills[char_className] = bool_enabled;
+			// собираем массив доступен ли скилл на текущем самолете (в цикле перебирается Mk1, Mk2, Mk3)
+			let a_availableSkills = [];
+			for(let mk = 0; mk < a_enabled.length; mk++){
+
+				// загоняем в массив доступность текущего скилла Mk на текущем самолете Mk
+				a_availableSkills.push(a_enabled[mk]);
+
+			}
+
+			// присваиваем текущему самолету Mk доступность текущего скилла
+			this.a_planes[p].o_availableSkills[char_className] = a_availableSkills;
 
 		}
 
@@ -274,6 +307,33 @@ this._getPricesParams = function(){
 	return;
 
 }; // /_getPricesParams
+
+// функция рассчитывает время изучения технологии на каждом уровне
+this._getTechnologiesTimes = function(){
+
+	for(let t = 0; t < this.a_technologies.length; t++){
+
+		let o_currentTechnology = this.a_technologies[t];
+
+		for(let l = 0; l < o_currentTechnology.o_prices.a_diamonds.length; l++){
+
+			// время изучения технологии в миллисекундах и часах
+			// алмазы * 4 == часы
+			// алмазы * 4 * 1000 * 60 * 60
+			let int_hours = o_currentTechnology.o_prices.a_diamonds[l] * 4;
+			let int_timeMs = int_hours * 1000 * 60 * 60;
+
+			// делаем фразу Х часов
+			let char_timeHourText = this._declOfNum(int_hours, [' час', ' часа', ' часов']);
+
+			o_currentTechnology.a_times.push(int_timeMs);
+			o_currentTechnology.a_timesText.push(char_timeHourText);
+
+		}
+
+	}
+
+};
 
 // проверяет соответствие имя_переменной - тип_переменной. Принимает имя, которое потом рекурсивно конкатенирует с остальными
 this._TEST = function(char_prevName){
@@ -404,6 +464,14 @@ this._TEST = function(char_prevName){
 
 }; // /_TEST
 
+// принимает число и массив слов [монитор, монитора, мониторов]
+this._declOfNum = function(float_number, a_titles) {
+
+    let a_cases = [2, 0, 1, 1, 1, 2];  
+    return float_number + a_titles[ (float_number%100>4 && float_number%100<20)? 2 : a_cases[(float_number%10<5)?float_number%10:5] ];
+
+}
+
 this.o_ethalon = {int_a:1};
 this.o_ethalonFalse = 1;
 
@@ -419,14 +487,12 @@ console.log('a_planes:', CONFIG.a_planes);
 CONFIG._getPricesParams();
 console.log('a_params:', CONFIG.a_params);
 
-
+// инициализируем время изучения технологии, в миллисекундах и часах для текста
+CONFIG._getTechnologiesTimes();
+console.log('a_technologies:', CONFIG.a_technologies);
 
 // тестируем на соответствие имена переменных. Принимает имя, которое потом рекурсивно конкатенирует с остальными
 {
-	let float_time = window.performance.now();
-
 	let test = CONFIG._TEST('CONFIG');
-
 	console.log('test:', test);
-	console.log(`Тест конфига занял ${window.performance.now() - float_time} мс.`);
 }

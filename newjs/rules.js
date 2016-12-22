@@ -5,7 +5,7 @@ class 			ClassName
 object class 	_ObjectName
 method			_methodName
 prototype		_prototypeMethodName
-var, let 		char_variableName, int_variableName
+var, let 		str_variableName, int_variableName
 1|2|3...		case_variableName (один из нескольких статичных параметров)
 function 		f_functionName
 object			o_objectName

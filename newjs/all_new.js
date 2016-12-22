@@ -15,19 +15,19 @@ $(document).on('load', function() {
 		// returned all key:value this object
 		Object.prototype._comment = function(){
 
-			let char_str = ``;
+			let str_str = ``;
 
 			for(let key in this){
 
 				if(key !== '_comment'){
 
-					char_str += `key: ${key}, value: ${this[key]};\n`;
+					str_str += `key: ${key}, value: ${this[key]};\n`;
 
 				} // /if
 
 			} // /for
 
-			return char_str;
+			return str_str;
 
 		} // /Object.prototype._comment
 
@@ -206,11 +206,11 @@ $(document).on('load', function() {
 			} // /this._hasAction
 
 			// дефолтные назначения
-			this._setDefaultAction = function(char_keyName){
+			this._setDefaultAction = function(str_keyName){
 
 				let case_action;
 
-				switch(this.char_keyName){
+				switch(this.str_keyName){
 
 					// ракеты
 					case '1': case_action = 'A'; break;
@@ -275,7 +275,7 @@ $(document).on('load', function() {
 			this.int_keyCode = int_keyCode;
 
 			// имя клавиши достаем из массива по keyCode
-			this.char_keyName = a_keys[int_keyCode];
+			this.str_keyName = a_keys[int_keyCode];
 
 			// если действие есть и существует, записываем в this. Если нет, определяем дефолтное.
 			this.case_action = this._hasAction(case_action) ? case_action : this._setDefaultAction(case_action);
@@ -290,7 +290,7 @@ $(document).on('load', function() {
 			return `Класс keySet\n
 					Создает объект со следующими параметрами:\n
 					int_keyCode: код клавиши, пришедший от JQuery\n
-					char_keyName: имя клавиши, задано в массиве a_keys\n
+					str_keyName: имя клавиши, задано в массиве a_keys\n
 					case_action: действие для нажатия клавиши. Может принимать значения любых действий в битве. Например A - выстрел из пулемета, up - самолет летит вверх\n
 					case_type: тип действия. ракета, скилл, управление\n`;
 
@@ -408,8 +408,8 @@ $(document).on('load', function() {
 			for(let i = 0; i < $_warInterfaceData.length; i++){
 
 				let $_el = $_warInterfaceData[i];
-				let char_dataName = $_el.data('data-name');
-				let var_dataValue = this.link_o_player[char_dataName];
+				let str_dataName = $_el.data('data-name');
+				let var_dataValue = this.link_o_player[str_dataName];
 
 				$_el.html(var_dataValue);
 

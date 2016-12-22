@@ -48,7 +48,7 @@ $(document).on('load', function() {
 		} // Math._randomMinMaxRound
 
 		// grad to rad
-		Math.float_PI180 = Math.PI/180;
+		Math.num_PI180 = Math.PI/180;
 
 	}
 
@@ -61,7 +61,7 @@ $(document).on('load', function() {
 	// ракеты
 	class Rocket{
 
-		constructor(o_rocketParams, float_playerX, float_playerY){
+		constructor(o_rocketParams, num_playerX, num_playerY){
 
 			// console.log(o_params._comment);
 
@@ -74,7 +74,7 @@ $(document).on('load', function() {
 				let case_side = this.case_koef == 1 ? 180 : 0;
 
 				// рассчет угла
-				this.float_a = -Math.atan2(this.float_y-float_playerY, this.float_x-float_playerY)*180/Math.PI+case_side;
+				this.num_a = -Math.atan2(this.num_y-num_playerY, this.num_x-num_playerY)*180/Math.PI+case_side;
 
 			}
 			
@@ -94,7 +94,7 @@ $(document).on('load', function() {
 
 			// если ракета за пределами экрана, возвращаем лимит координат
 			// TODO: переписать крайние координаты в глобальные настройки
-			if(this.float_x > 1000 || this.float_x < -300 || this.float_y > 1000 || this.float_y < -300){
+			if(this.num_x > 1000 || this.num_x < -300 || this.num_y > 1000 || this.num_y < -300){
 
 				return 'coordLimit';
 
@@ -103,12 +103,12 @@ $(document).on('load', function() {
 			// TODO: переписать эту магию
 			let timeK = t.tr/40;
 			this.nach = timeK*this.koef*this.s;
-			this.y -= this.nach*Math.sin(this.a*Math.float_PI180);
-			this.x += this.nach*Math.sin((90-this.a)*Math.float_PI180);
+			this.y -= this.nach*Math.sin(this.a*Math.num_PI180);
+			this.x += this.nach*Math.sin((90-this.a)*Math.num_PI180);
 			canvas_context.globalAlpha = 1;
 			canvas_context.save();
 			canvas_context.translate(this.x, this.y);
-			canvas_context.rotate(-this.a*Math.float_PI180);
+			canvas_context.rotate(-this.a*Math.num_PI180);
 			canvas_context.drawImage(this.image, -this.w/2, -this.h/2, this.w, this.h);
 			canvas_context.restore();
 
@@ -141,9 +141,9 @@ $(document).on('load', function() {
 		// обработчик события клавиатуры
 		_keyboardEvent(o_ev){
 
-			let int_keyCode = o_ev.keyCode;
+			let num_keyCode = o_ev.keyCode;
 
-			switch(int_keyCode){
+			switch(num_keyCode){
 
 				
 				case link_out.link_o_player.o_controlUp:
@@ -164,9 +164,9 @@ $(document).on('load', function() {
 				// остальные клавиши (оружие, супер-скорость и т.д.)
 
 					// ссылка на массив в котором содержится: код клавиши = действие
-					let link_a_keyCodeActions = link_out.link_o_player.a_keyCodeActions;
+					let link_arr_keyCodeActions = link_out.link_o_player.arr_keyCodeActions;
 
-					link_out.link_o_player._controlEvent(link_a_keyCodeActions[int_keyCode]);
+					link_out.link_o_player._controlEvent(link_arr_keyCodeActions[num_keyCode]);
 
 
 			} // /switch
@@ -180,28 +180,28 @@ $(document).on('load', function() {
 	//управление
 	class KeySet{
 
-		constructor(int_keyCode, case_action){
+		constructor(num_keyCode, case_action){
 		// код клавиши и действие для этой клавиши.
 		// если действие не задано, встанет по-умолчанию
 
 			// keyCode - номер элемента. Элемент - имя клавиши.
-			let a_keys = ["none",,,,,,,,"backspace","Tab",,,,"Enter",,,"Shift","Ctrl","Alt","Pause","CapsLock",,,,,,,"Esc",,,,,"Пробел","PageUp","PageDown","End","Home","&#8592;","&#8593;","&#8594;","&#8595;",,,,,"Insert","Delete",,"0","1","2","3","4","5","6","7","8","9",,,,,,,,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Left Win","Right Win","App",,,"Num 0","Num 1","Num 2","Num 3","Num 4","Num 5","Num 6","Num 7","Num 8","Num 9","Num *","Num +",,"Num -","Num .","Num /","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",,,,,,,,,,,,,,,,,,,,,"NumLock","ScrollLock",,,,,,,,,"PrintScreen",,,"Meta",,,,,,,,,,,,,,,,,,,,,,,,,,,,,";","=",",","-",".","/","~",,,,,,,,,,,,,,,,,,,,,,,,,,,"[","\\","]","\'"];
+			let arr_keys = ["none",,,,,,,,"backspace","Tab",,,,"Enter",,,"Shift","Ctrl","Alt","Pause","CapsLock",,,,,,,"Esc",,,,,"Пробел","PageUp","PageDown","End","Home","&#8592;","&#8593;","&#8594;","&#8595;",,,,,"Insert","Delete",,"0","1","2","3","4","5","6","7","8","9",,,,,,,,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Left Win","Right Win","App",,,"Num 0","Num 1","Num 2","Num 3","Num 4","Num 5","Num 6","Num 7","Num 8","Num 9","Num *","Num +",,"Num -","Num .","Num /","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",,,,,,,,,,,,,,,,,,,,,"NumLock","ScrollLock",,,,,,,,,"PrintScreen",,,"Meta",,,,,,,,,,,,,,,,,,,,,,,,,,,,,";","=",",","-",".","/","~",,,,,,,,,,,,,,,,,,,,,,,,,,,"[","\\","]","\'"];
 
 			// ракеты
-			let a_rockets = ['A','B','C','D','E','F','G','H'];
+			let arr_rockets = ['A','B','C','D','E','F','G','H'];
 
 			// скиллы
-			let a_skills = ['I','J','K','L','M','N','O','P','superSpeed'];
+			let arr_skills = ['I','J','K','L','M','N','O','P','superSpeed'];
 
 			// управление
-			let a_control = ['up','down'];
+			let arr_control = ['up','down'];
 
 			// проверка существования действия (ищем действие в каждом массиве действий)
 			this._hasAction = function(case_action){
 
 				if(!case_action) return false;
 
-				return !!((a_rockets.indexOf(case_action) + 1) || (a_skills.indexOf(case_action) + 1) || (a_control.indexOf(case_action) + 1));
+				return !!((arr_rockets.indexOf(case_action) + 1) || (arr_skills.indexOf(case_action) + 1) || (arr_control.indexOf(case_action) + 1));
 
 			} // /this._hasAction
 
@@ -248,17 +248,17 @@ $(document).on('load', function() {
 			// определение типа события
 			this._getType = function(case_action){
 
-				if(a_rockets.indexOf(case_action) + 1){
+				if(arr_rockets.indexOf(case_action) + 1){
 
 					return 'rocket';
 
 				}
-				else if(a_skills.indexOf(case_action) + 1){
+				else if(arr_skills.indexOf(case_action) + 1){
 
 					return 'skill';
 
 				}
-				else if(a_control.indexOf(case_action) + 1){
+				else if(arr_control.indexOf(case_action) + 1){
 
 					return 'control';
 
@@ -272,10 +272,10 @@ $(document).on('load', function() {
 			} // /this._getType
 
 			// назначаем код клавиши на this
-			this.int_keyCode = int_keyCode;
+			this.num_keyCode = num_keyCode;
 
 			// имя клавиши достаем из массива по keyCode
-			this.str_keyName = a_keys[int_keyCode];
+			this.str_keyName = arr_keys[num_keyCode];
 
 			// если действие есть и существует, записываем в this. Если нет, определяем дефолтное.
 			this.case_action = this._hasAction(case_action) ? case_action : this._setDefaultAction(case_action);
@@ -289,8 +289,8 @@ $(document).on('load', function() {
 
 			return `Класс keySet\n
 					Создает объект со следующими параметрами:\n
-					int_keyCode: код клавиши, пришедший от JQuery\n
-					str_keyName: имя клавиши, задано в массиве a_keys\n
+					num_keyCode: код клавиши, пришедший от JQuery\n
+					str_keyName: имя клавиши, задано в массиве arr_keys\n
 					case_action: действие для нажатия клавиши. Может принимать значения любых действий в битве. Например A - выстрел из пулемета, up - самолет летит вверх\n
 					case_type: тип действия. ракета, скилл, управление\n`;
 
@@ -327,10 +327,10 @@ $(document).on('load', function() {
 		// прописывает ресурсы в интерфейс
 		_$_setResources(){
 
-			$('#metall span').html(this.link_o_player.a_int_resources[0]);
-			$('#silicon span').html(this.link_o_player.a_int_resources[1]);
-			$('#trotill span').html(this.link_o_player.a_int_resources[2]);
-			$('#diamonds span').html(this.link_o_player.a_int_resources[3]);
+			$('#metall span').html(this.link_o_player.arr_num_resources[0]);
+			$('#silicon span').html(this.link_o_player.arr_num_resources[1]);
+			$('#trotill span').html(this.link_o_player.arr_num_resources[2]);
+			$('#diamonds span').html(this.link_o_player.arr_num_resources[3]);
 
 			return;
 
@@ -339,8 +339,8 @@ $(document).on('load', function() {
 		// во время битвы пишет текущее здоровье
 		_$_setWarLife(){
 			
-			$('#lifeW').css({width:this.link_o_player.float_life*1.8});
-			$('#life .img').css({left:-20+this.link_o_player.float_life*1.8});
+			$('#lifeW').css({width:this.link_o_player.num_life*1.8});
+			$('#life .img').css({left:-20+this.link_o_player.num_life*1.8});
 
 			return;
 
@@ -349,8 +349,8 @@ $(document).on('load', function() {
 		// во время битвы устанавливает прогресс накопления суперскорости
 		_$_setWarSpeed(){
 			
-			$('#superSpeedW').css({width:this.link_o_player.float_superSpeedW});
-			$('#superSpeed .img').css({left:-25+this.link_o_player.float_superSpeedW});
+			$('#superSpeedW').css({width:this.link_o_player.num_superSpeedW});
+			$('#superSpeed .img').css({left:-25+this.link_o_player.num_superSpeedW});
 
 			return;
 
@@ -359,8 +359,8 @@ $(document).on('load', function() {
 		// во время битвы устанавливает прогресс накопления перегрева
 		_$_setWarHot(){
 			
-			$('#hotW').css({width:this.link_o_player.float_hot*1.8});
-			$('#hot .img').css({left:-14+this.link_o_player.float_hot*1.8});
+			$('#hotW').css({width:this.link_o_player.num_hot*1.8});
+			$('#hot .img').css({left:-14+this.link_o_player.num_hot*1.8});
 
 			return;
 

@@ -120,60 +120,20 @@ $(document).on('load', function() {
 
 	class War{
 
-		constructor(link_o_player, link_o_global){
+		constructor(o_params){
 
-			this.link_o_player = link_o_player;
-			this.link_o_global = link_o_global;
+			Object.assign(this, params);
 
-		}
+			// навешиваем обработчик события клавиатуры
+			_initKeyboardEvents(){
 
-		// навешиваем обработчик события клавиатуры
-		_initKeyboardEvents(){
+				$(document).on('keyup keydown', o_player._keyboardEvent);
 
-			var link_out = this;
+				return;
 
-			$(document).on('keyup keydown keypress', this._keyboardEvent);
-
-			return;
+			}
 
 		}
-
-		// обработчик события клавиатуры
-		_keyboardEvent(o_ev){
-
-			let num_keyCode = o_ev.keyCode;
-
-			switch(num_keyCode){
-
-				
-				case link_out.link_o_player.o_controlUp:
-				// клавиша вверх
-
-					link_out.link_o_player._controlEvent('up');
-
-				break;
-				
-				case link_out.link_o_player.o_controlDown:
-				// клавиша вниз
-
-					link_out.link_o_player._controlEvent('down');
-
-				break;
-
-				default:
-				// остальные клавиши (оружие, супер-скорость и т.д.)
-
-					// ссылка на массив в котором содержится: код клавиши = действие
-					let link_arr_keyCodeActions = link_out.link_o_player.arr_keyCodeActions;
-
-					link_out.link_o_player._controlEvent(link_arr_keyCodeActions[num_keyCode]);
-
-
-			} // /switch
-
-			return;
-
-		} // /_keyboardEvent
 
 	}
 
@@ -303,15 +263,171 @@ $(document).on('load', function() {
 
 		constructor(o_params){
 
-			// console.log(o_params._comment);
-
 			Object.assign(this, o_params);
 
-			// код клавиши = объект
+		} // /constructor
 
-		}
+		// обработчик событий клавиатуры
+		// принимает код клавиши и тип - нажал или отпустил
+		_keyboardEvent(o_ev){
 
-		_controlEvent()
+			let num_keyCode = o_ev.keyCode;
+			let str_type = o_ev.type;
+
+			// если keyup (отпустили клавишу) то false, иначе true
+			let bool_typeToValue = !(str_type == 'keyup');
+
+			switch(num_keyCode){
+
+				// клавиши у которых работает удержание	
+				case o_player.o_controls.num_up:
+				// клавиша вверх
+
+					// проверяем, не установлено ли уже такое-же значение
+					if(o_player.bool_controlUp != bool_typeToValue){
+
+						o_player._controlUp(bool_typeToValue);
+						
+					}
+
+				break;
+				
+				case o_player.o_controls.num_down:
+				// клавиша вниз
+
+					if(o_player.bool_controlDown != bool_typeToValue){
+
+						o_player._controlDown(bool_typeToValue);
+						
+					}
+
+				break;
+
+				case o_player.o_controls.num_superSpeed:
+				// ускорение
+
+					if(o_player.bool_controlSuperSpeed != bool_typeToValue){
+
+						o_player._controlSuperSpeed(bool_typeToValue);
+						
+					}
+
+				break;
+
+				// остальные клавиши (оружие, скиллы и т.д.)
+				default:
+
+					o_player._controlEvent(o_player.o_keyCodeActions[num_keyCode]);
+
+
+			} // /switch
+
+			return;
+
+		} // /_keyboardEvent
+
+		// обработчик исходящих выстрелов и скиллов
+		// принимает код оружия/скилла
+		_controlEvent(str_class){
+
+			// TODO: везде добавить вывод сообщения об ошибке
+
+			/* если хоть одна проверка не проходит, завершаем функцию */
+
+			// определяем оружие это или скилл
+			let str_type = 'o_' + CONFIG.o_weaponsAndSkills[str_class];
+
+			// если время окончания перезарядки наступило (меньше текущего) 
+			let bool_recharge = this.o_recharges[str_class] < window.performance.now();
+			if(!bool_recharge) return;
+
+			// проверка на количество
+			let bool_count = this[str_type][str_class].num_count > 0;
+			if(!bool_count) return;
+
+			// проверка на перегрев (только оружие)
+			if(str_type == 'o_weapons'){
+
+				// если текущий перегрев + перегрев оружия меньше максимального перегрева, то ОК
+				let bool_overheat = this.num_overheat + this[str_type][str_class].num_overheat <= CONFIG.o_other.num_maxOverheat;
+				if(!bool_overheat) return;
+
+			}
+
+			// проверка на блокировку управления
+			if(this.o_negativeEffects.bool_blockControl) return;
+
+			// проверка доступности на самолете
+			if(!this[str_type][str_class].bool_availableOnCurrentPlane) return;
+
+			// включено ли в набор оружия в текущей войне
+			if(!this[str_type][str_class].bool_enabledInWar) return;
+
+			// нету ли блокировки после предыдущей отправки
+			if(this.bool_blockEvent) return;
+
+			/* все проверки прошли */
+
+			// блокировка пока не будет получен ответ
+			this.bool_blockEvent = true;
+
+			// отправка данных на сервер (тип события и класс оружия/скилла)
+			o_socket._jsonSend({str_type: 'controlEvent', str_class: str_class});
+
+			return;
+
+		} // /_controlEvent
+
+		// обработчик установки полета вверх
+		_controlUp(bool_val){
+
+			// проверка на блокировку управления
+			if(this.o_negativeEffects.bool_blockControl) return;
+
+			// включаем 
+			this.bool_controlUp = bool_val;
+
+			// отправка данных на сервер (тип события)
+			o_socket._jsonSend({str_type: 'controlUp', bool_val: bool_val});
+
+			return;
+
+		} // /_controlUp
+
+		// обработчик установки полета вниз
+		_controlDown(bool_val){
+
+			// проверка на блокировку управления
+			if(this.o_negativeEffects.bool_blockControl) return;
+
+			// включаем 
+			this.bool_controlDown = bool_val;
+
+			// отправка данных на сервер (тип события)
+			o_socket._jsonSend({str_type: 'controlDown', bool_val: bool_val});
+
+			return;
+
+		} // /_controlDown
+
+		// обработчик установки суперскорости
+		_controlSuperSpeed(bool_val){
+
+			// проверка на блокировку управления
+			if(this.o_negativeEffects.bool_blockControl) return;
+
+			// проверка на минимальное наличие суперскорости
+			let bool_superSpeed = this.num_superSpeed >= CONFIG.o_other.num_minSuperSpeed;
+			if(!bool_superSpeed) return;
+
+			// включаем 
+			o_player.bool_controlSuperSpeed = bool_val;
+
+			o_socket._jsonSend({str_type: 'controlSuperSpeed', bool_val: bool_val});
+
+			return;
+
+		} // /_controlSuperSpeed
 
 	}
 
@@ -324,48 +440,6 @@ $(document).on('load', function() {
 
 		}
 
-		// прописывает ресурсы в интерфейс
-		_$_setResources(){
-
-			$('#metall span').html(this.link_o_player.arr_num_resources[0]);
-			$('#silicon span').html(this.link_o_player.arr_num_resources[1]);
-			$('#trotill span').html(this.link_o_player.arr_num_resources[2]);
-			$('#diamonds span').html(this.link_o_player.arr_num_resources[3]);
-
-			return;
-
-		}
-
-		// во время битвы пишет текущее здоровье
-		_$_setWarLife(){
-			
-			$('#lifeW').css({width:this.link_o_player.num_life*1.8});
-			$('#life .img').css({left:-20+this.link_o_player.num_life*1.8});
-
-			return;
-
-		}
-
-		// во время битвы устанавливает прогресс накопления суперскорости
-		_$_setWarSpeed(){
-			
-			$('#superSpeedW').css({width:this.link_o_player.num_superSpeedW});
-			$('#superSpeed .img').css({left:-25+this.link_o_player.num_superSpeedW});
-
-			return;
-
-		}
-
-		// во время битвы устанавливает прогресс накопления перегрева
-		_$_setWarHot(){
-			
-			$('#hotW').css({width:this.link_o_player.num_hot*1.8});
-			$('#hot .img').css({left:-14+this.link_o_player.num_hot*1.8});
-
-			return;
-
-		}
-
 		// скрывает игровой интерфейс
 		_$_hiddenGame(){
 
@@ -375,7 +449,7 @@ $(document).on('load', function() {
 
 		}
 		// показывает игровой интерфейс
-		_$_hiddenGame(){
+		_$_showGame(){
 
 			$('.game-interface').removeClass('.game-interface_off');
 
@@ -384,7 +458,7 @@ $(document).on('load', function() {
 		}
 
 		// скрывает интерфейс битвы
-		_$_showWar(){
+		_$_hiddenWar(){
 
 			$('.war-interface').addClass('.war-interface_off');
 

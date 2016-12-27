@@ -4,7 +4,7 @@
 
 /* OTHER ROUTER */
 
-var f_otherRouter = function(o_message){
+const f_otherRouter = function(o_message){
 
 	switch(o_message.case_type){
 	
@@ -12,7 +12,7 @@ var f_otherRouter = function(o_message){
 		// самое первое сообщение инифиализации игрока
 
 			// создаем игрока клиента из пришедших данных
-			var _Player = new Player(o_message);
+			var o_player = new Player(o_message);
 
 
 		break;
@@ -25,7 +25,7 @@ var f_otherRouter = function(o_message){
 
 /* WAR ROUTER */
 
-var f_warRouter = function(o_message){
+const f_warRouter = function(o_message){
 
 	switch(o_message.case_type){
 
@@ -33,45 +33,41 @@ var f_warRouter = function(o_message){
 		// старт битвы
 
 			// убираем игровой интерфейс
-			_Interface._$_hideGame();
+			o_interface._$_hideGame();
 
 			// включаем интерфейс битвы
-			_Interface._$_showWar();
-
-			// зполняем интерфейс битвы данными
-			_Interface._$_fillWar();
+			o_interface._$_showWar();
 
 			// инициализируем объект войны
-			// TODO: передать глобальный объект и объект игрока по ссылке
-			var _War = new War();
+			let o_war = new War(o_message);
 
 			// инициализируем игроков
-			var _a_Players = [];
+			let arr_players = [];
 
 			// пробегаемся по массиву с пришедшими игроками и засовываем их в свой массив через new Player(); 
-			for(let i; i < o_message._a_players.length; i++){
+			for(let i; i < o_message.arr_players.length; i++){
 
 				// ссылка на игрока, которого сейчас обходим в цикле
-				let link_currentPlayer = o_message._a_players[i];
+				let o_currentPlayer = o_message.arr_players[i];
 
 				// Если имеем дело с самими собой, принудительно пихаем в 0 элемент массива.
-				let int_playerIdInPlayers = link_currentPlayer.int_vkId == _Player.vkId ? 0 : i+1;
+				let num_playerIdInPlayers = o_currentPlayer.num_vkId == o_player.num_vkId ? 0 : i+1;
 
-				_a_Players[int_playerIdInPlayers] = new Player(link_currentPlayer);
+				arr_players[num_playerIdInPlayers] = new Player(o_currentPlayer);
 
 			}
 
 			// инициализация объекта с ракетами
-			var _a_Rockets = new Rockets();
+			let arr_rockets = new Rockets();
 
 			// инициализация объекта со скиллами
-			var _a_Skills = new Skills();
+			let arr_skills = new Skills();
 
 			// включаем клавиатурные события
-			_War._initKeyboardEvents();
+			o_war._initKeyboardEvents();
 
 			// старт отрисовки
-			_War._start();
+			o_war._start();
 
 		break;
 
@@ -79,7 +75,7 @@ var f_warRouter = function(o_message){
 		// корректировка положения соперников
 
 			// метод корректирует движение соперников
-			_a_Players._correctTraectory(o_message);
+
 
 		break;
 
@@ -87,7 +83,7 @@ var f_warRouter = function(o_message){
 		// выстрел
 
 			// во все активные ракеты вставляется новая ракета
-			_a_Rockets._push(new Rocket(o_message));
+			arr_rockets._push(new Rocket(o_message));
 
 		break;
 
@@ -95,7 +91,7 @@ var f_warRouter = function(o_message){
 		// включение скилла
 
 			// во все активные скиллы вставляется новый скилл
-			_a_Skills._push(new Skill(o_message));
+			arr_skills._push(new Skill(o_message));
 
 		break;
 
@@ -103,7 +99,7 @@ var f_warRouter = function(o_message){
 		// на поле появился бонусный предмет
 
 			// добавляем предмет на поле
-			_War._dropItem(new WarItem(o_message));
+			o_war._dropItem(new WarItem(o_message));
 
 		break;
 
@@ -111,7 +107,7 @@ var f_warRouter = function(o_message){
 		// кто-то подобрал предмет
 
 			// обработка поднятия предмена
-			_War._putItem(o_message);
+			o_war._putItem(o_message);
 
 		break;
 
@@ -119,7 +115,7 @@ var f_warRouter = function(o_message){
 		// попадание
 
 			// отработка попадания
-			_a_Players._hit(o_message);
+			arr_players._hit(o_message);
 
 		break;
 
@@ -127,7 +123,7 @@ var f_warRouter = function(o_message){
 		// событие карты (метеорит, гроза и т.д.)
 
 			// добавляем объект на карту TODO
-			_a_War._putMapObject(new MapObject(o_message));
+			o_war._putMapObject(new MapObject(o_message));
 
 		break;
 
@@ -141,7 +137,7 @@ var f_warRouter = function(o_message){
 
 /* INTERFACE ROUTER */
 
-var f_interfaceRouter = function(o_message){
+const f_interfaceRouter = function(o_message){
 
 
 

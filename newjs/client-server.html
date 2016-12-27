@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script>
+		
+		"use strict";
+
+		let sockets = [];
+		let messages = [];
+
+		var int = setInterval(function(){
+
+			let id = sockets.length;
+
+			sockets.push(new WebSocket("wss://78.155.197.229:80"));
+
+			sockets[id].onmessage = function(ev){
+
+				//console.log(ev.data);
+
+			};
+
+			if(sockets.length > 250) {
+
+				//window.open('https://78.155.197.229/planes2/newjs/client-server.html');
+
+				clearInterval(int);
+
+			}
+
+		}, 100);
+
+	</script>
+</head>
+<body>
+	
+</body>
+</html>

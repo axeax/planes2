@@ -12,7 +12,8 @@ const f_otherRouter = function(o_message){
 		// самое первое сообщение инифиализации игрока
 
 			// создаем игрока клиента из пришедших данных
-			var o_player = new Player(o_message);
+			let o_player = new Player(o_message);
+			let o_war = new War();
 
 
 		break;
@@ -39,10 +40,10 @@ const f_warRouter = function(o_message){
 			o_interface._$_showWar();
 
 			// инициализируем объект войны
-			let o_war = new War(o_message);
+			o_war._init();
 
 			// инициализируем игроков
-			let arr_players = [];
+			o_war.arr_players = [];
 
 			// пробегаемся по массиву с пришедшими игроками и засовываем их в свой массив через new Player(); 
 			for(let i; i < o_message.arr_players.length; i++){
@@ -53,15 +54,21 @@ const f_warRouter = function(o_message){
 				// Если имеем дело с самими собой, принудительно пихаем в 0 элемент массива.
 				let num_playerIdInPlayers = o_currentPlayer.num_vkId == o_player.num_vkId ? 0 : i+1;
 
-				arr_players[num_playerIdInPlayers] = new Player(o_currentPlayer);
+				o_war.arr_players[num_playerIdInPlayers] = new Player(o_currentPlayer);
 
 			}
 
-			// инициализация объекта с ракетами
-			let arr_rockets = new Rockets();
+			// инициализация массива с ракетами
+			o_war.arr_rockets = [];
 
-			// инициализация объекта со скиллами
-			let arr_skills = new Skills();
+			// инициализация массива с эффектами
+			o_war.arr_effects = [];
+
+			// инициализация массива с объектами на карте
+			o_war.arr_mapItems = [];
+
+			// инициализация массива с объектами на карте (метеориты, дождь и т.д.)
+			o_war.arr_mapEvents = [];
 
 			// включаем клавиатурные события
 			o_war._initKeyboardEvents();
@@ -75,7 +82,7 @@ const f_warRouter = function(o_message){
 		// корректировка положения соперников
 
 			// метод корректирует движение соперников
-
+			o_war._correctTraectory(o_message);
 
 		break;
 
@@ -83,15 +90,15 @@ const f_warRouter = function(o_message){
 		// выстрел
 
 			// во все активные ракеты вставляется новая ракета
-			arr_rockets._push(new Rocket(o_message));
+			o_war.arr_rockets.push(new Rocket(o_message));
 
 		break;
 
 		case 'skill':
 		// включение скилла
 
-			// во все активные скиллы вставляется новый скилл
-			arr_skills._push(new Skill(o_message));
+			// у ого-то сработал скилл
+			o_war._skill(new Skill(o_message));
 
 		break;
 
@@ -99,7 +106,7 @@ const f_warRouter = function(o_message){
 		// на поле появился бонусный предмет
 
 			// добавляем предмет на поле
-			o_war._dropItem(new WarItem(o_message));
+			o_war._dropItem(new MapItem(o_message));
 
 		break;
 
@@ -115,7 +122,10 @@ const f_warRouter = function(o_message){
 		// попадание
 
 			// отработка попадания
-			arr_players._hit(o_message);
+			o_war._hit(o_message);
+
+			// во все активные эффекты вставляется новый эффект
+			o_war.arr_effects.push(new Effect(o_message));
 
 		break;
 
@@ -123,7 +133,7 @@ const f_warRouter = function(o_message){
 		// событие карты (метеорит, гроза и т.д.)
 
 			// добавляем объект на карту TODO
-			o_war._putMapObject(new MapObject(o_message));
+			o_war._mapEvent(new MapEvent(o_message));
 
 		break;
 

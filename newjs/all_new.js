@@ -63,8 +63,6 @@ $(document).on('load', function() {
 
 		constructor(o_rocketParams, num_playerX, num_playerY){
 
-			// console.log(o_params._comment);
-
 			Object.assign(this, params);
 
 			// если ракета самонаводящаяся, то угол остается дефолтный, если нет то считается по формуле
@@ -120,14 +118,158 @@ $(document).on('load', function() {
 
 	class War{
 
-		constructor(o_params){
+		constructor(){
 
-			Object.assign(this, params);
+			this._init = function(o_params){
+				
+				Object.assign(this, o_params);
+
+			}
 
 			// навешиваем обработчик события клавиатуры
-			_initKeyboardEvents(){
+			this._initKeyboardEvents = function(){
 
 				$(document).on('keyup keydown', o_player._keyboardEvent);
+
+				return;
+
+			}
+
+			this._start = function(){
+
+				/* немного инициализации */
+				this.num_summTimeFramesElapsed = 0;
+				this.num_countFrames = 0;
+				this.num_timeFrameStart = window.performance.now();
+
+				// старт отрисовки
+				this.num_requestAnimationFrame = requestAnimationFrame(this._linkDraw());
+
+			}
+
+			// игра на паузу
+			this._pause = function(){
+
+				/* TODO: проверка: на паузу можно поставить только если идет игра с компьютером */
+
+				// выключаем requestAnimationFrame
+				cancelAnimationFrame(this.num_requestAnimationFrame);
+
+				return;
+
+			}
+
+			// продолжение игры после паузы
+			// отличается от _start отсутствием инициализации
+			this._continue = function(){
+
+				// ID таймера лежит тут
+				this.num_requestAnimationFrame = requestAnimationFrame(this._linkDraw());
+
+			}
+
+			// для передачи this в _draw при вызове из requestAnimationFrame
+			this._linkDraw = function(){
+
+				let f_thisDraw = function(){
+
+					o_war._draw();
+
+					return;
+
+				}
+
+				return f_thisDraw;
+
+			}
+
+			// функция которая срабатывает каждый кадр
+			// ведет статистику, вызывает отрисоку всех объектов
+			this._draw = function(){
+
+				// время от начала предыдущего кадра
+				this.num_prevTimeFrameElapsed = window.performance.now() - this.num_timeFrameStart;
+
+				// timestamp начала кадра
+				this.num_timeFrameStart = window.performance.now();
+
+				// передача всех объектов для отрисовки в обработчик
+				this._drawObjects(this.arr_players);
+				this._drawObjects(this.arr_rockets);
+				this._drawObjects(this.arr_mapItems);
+				this._drawObjects(this.arr_mapEvents);
+				this._drawObjects(this.arr_effects);
+
+				// ЭКСПЕРЕМЕНТАЛЬНО:
+				// все отрисовки не рисуют, а записывают функции с стек отрисовки, чтобы ТУТ выполнить именно отрисовку за один раз
+				// # this._drawStack();
+
+				// timestamp окончания кадра
+				this.num_timeFrameEnd = window.performance.now();
+
+				// считаем время затраченное на отрисовку всего кадра
+				this.num_timeFrameElapsed = this.num_timeFrameEnd - this.num_timeFrameStart;
+
+				// среднее время кадра за X кадров
+				{
+					this.num_summTimeFramesElapsed += this.num_timeFrameElapsed;
+					this.num_countFrames += 1;
+
+					if(this.num_countFrames >= CONFIG.o_other.num_countFramesAveraging){
+
+						this.num_timeFramesElapsedAveraging = this.num_summTimeFramesElapsed / this.num_countFrames;
+
+						this.num_summTimeFramesElapsed = 0;
+						this.num_countFrames = 0;	
+
+					}
+				}
+
+				console.log(this.num_timeFramesElapsedAveraging);
+
+				// ID таймера лежит тут
+				this.num_requestAnimationFrame = requestAnimationFrame(this._linkDraw());
+
+			}
+
+			// рисует из стэка отрисовок
+			// можно будет сделать распараллеливание по фреймам
+			this._drawStack = function(){
+
+				for(let i = 0; i < this.arr_drawStack.length; i++){
+
+					this.arr_drawStack[i]();
+
+				}
+
+				return;
+
+			}
+
+			// универсальная функция, пробегает по переданому массиву и вызывает функцию отрисоки каждого объекта в нем
+			this._drawObjects = function(arr_objects = []){
+
+				// если пришедший массив пустой, выходим
+				if(!arr_objects.length) return;
+
+				for(let i = 0; i < arr_objects.length; i++){
+
+					// если флаг паузы отрисовки есть, сразу идем к следующему элементу
+					// например невидимость, или кружок полностью перезаряженного оружия
+					if(arr_objects[i].bool_drawPause) continue;
+
+					// отрисовка возвращает true если действие продолжается и false если рисовать текущий объект уже не надо
+					let bool_active = arr_objects[i]._draw();
+
+					// если объект рисовать уже не надо, удаляем его из массива
+					if(!bool_active){
+
+						arr_objects.splice(i, 1);
+						i--;
+
+					}
+
+				}
 
 				return;
 
@@ -295,6 +437,7 @@ $(document).on('load', function() {
 				case o_player.o_controls.num_down:
 				// клавиша вниз
 
+					// проверяем, не установлено ли уже такое-же значение
 					if(o_player.bool_controlDown != bool_typeToValue){
 
 						o_player._controlDown(bool_typeToValue);
@@ -306,6 +449,7 @@ $(document).on('load', function() {
 				case o_player.o_controls.num_superSpeed:
 				// ускорение
 
+					// проверяем, не установлено ли уже такое-же значение
 					if(o_player.bool_controlSuperSpeed != bool_typeToValue){
 
 						o_player._controlSuperSpeed(bool_typeToValue);
@@ -337,7 +481,7 @@ $(document).on('load', function() {
 			// определяем оружие это или скилл
 			let str_type = 'o_' + CONFIG.o_weaponsAndSkills[str_class];
 
-			// если время окончания перезарядки наступило (меньше текущего) 
+			// если время окончания перезарядки/(длительности эффекта для скилла) наступило (меньше текущего) 
 			let bool_recharge = this.o_recharges[str_class] < window.performance.now();
 			if(!bool_recharge) return;
 
@@ -433,10 +577,8 @@ $(document).on('load', function() {
 
 	class Interface{
 
-		constructor(link_o_player, link_o_global){
+		constructor(){
 
-			this.link_o_player = link_o_player;
-			this.link_o_global = link_o_global;
 
 		}
 
@@ -469,25 +611,6 @@ $(document).on('load', function() {
 		_$_showWar(){
 
 			$('.war-interface').removeClass('.war-interface_off');
-
-			return;
-
-		}
-
-		// заполняет интерфейс битвы данными
-		_$_fillWar(){
-
-			let $_warInterfaceData = $(`.war-interface__data`);
-
-			for(let i = 0; i < $_warInterfaceData.length; i++){
-
-				let $_el = $_warInterfaceData[i];
-				let str_dataName = $_el.data('data-name');
-				let var_dataValue = this.link_o_player[str_dataName];
-
-				$_el.html(var_dataValue);
-
-			} // /for
 
 			return;
 

@@ -1,9 +1,9 @@
+"use strict";
+
 /* CLIENT CORE FILE */
 
 $(document).on('load', function() {
 
-	
-	
 	/* INITS GLOBAL */
 
 	f_initExtraMethods();
@@ -184,7 +184,7 @@ $(document).on('load', function() {
 			}
 
 			// функция которая срабатывает каждый кадр
-			// ведет статистику, вызывает отрисоку всех объектов
+			// ведет статистику, вызывает отрисовку всех объектов
 			this._draw = function(){
 
 				// время от начала предыдущего кадра
@@ -224,8 +224,6 @@ $(document).on('load', function() {
 
 					}
 				}
-
-				console.log(this.num_timeFramesElapsedAveraging);
 
 				// ID таймера лежит тут
 				this.num_requestAnimationFrame = requestAnimationFrame(this._linkDraw());
@@ -619,4 +617,82 @@ $(document).on('load', function() {
 
 	} // /Interface
 
-})
+	class WebSockets{
+
+		constructor(){
+
+	
+
+		}
+
+		// инициализация
+		_init(f_callback){
+
+			this.o_ws = new WebSocket('wss://78.155.197.229:80');
+
+			this.o_ws.onopen = f_callback;
+
+		}
+
+		// обработчик входящих сообщений, пока навешиваются псевдо-все, но потом буду наввешиваться на каждый открытый сокет отдельно
+		_initEvents(){
+
+			// навешиваем метод роутера на входящие сообщения сокета
+			this.o_ws.onmessage = o_router._allRouter;
+
+		}
+
+		// преобразует объект в json строку
+		_jsonSend(ob_params){
+
+			let str_params = JSON.stringify(ob_params);
+
+			this.o_ws.send(str_params);
+
+		}
+
+	}
+
+	let o_api = {
+
+		_init: function(f_callback){
+
+			setTimeout(f_callback, 1000);
+
+		}
+
+	}
+
+	let o_socket = new WebSockets;
+
+	let o_promiseChain = new Promise((f_resolve, f_reject) => {
+
+		o_api._init(() => {
+
+			f_resolve('init api');
+
+		});
+
+	}).then(o_result => {
+
+		console.log(o_result);
+
+		return new Promise((f_resolve, f_reject) => {
+
+			o_socket._init(() => {
+
+				f_resolve('init socket');
+
+			});
+
+		})
+
+	}).then(o_result => {
+
+		console.log(o_result);
+
+		o_socket._initEvents();
+
+	}) // /o_promiseChain
+
+}) // /document.load

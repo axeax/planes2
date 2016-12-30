@@ -4,7 +4,19 @@
 
 /* OTHER ROUTER */
 
-const f_otherRouter = function(o_message){
+const f_allRouter = function(str_message){
+
+	let o_message = JSON.parse(str_message.data);
+
+	let str_messageEcho = JSON.stringify(o_message, '\t');
+
+	console.log(o_test);
+
+	o_test.str_data = str_message;
+
+}
+
+const f_otherRouter = function(str_message){
 
 	switch(o_message.case_type){
 	
@@ -26,7 +38,7 @@ const f_otherRouter = function(o_message){
 
 /* WAR ROUTER */
 
-const f_warRouter = function(o_message){
+const f_warRouter = function(str_message){
 
 	switch(o_message.case_type){
 
@@ -147,8 +159,28 @@ const f_warRouter = function(o_message){
 
 /* INTERFACE ROUTER */
 
-const f_interfaceRouter = function(o_message){
+const f_interfaceRouter = function(str_message){
 
 
+
+}
+
+let f_Router = function(str_routerType, o_test){
+
+	if(str_routerType == 'all'){
+
+		return function(str_message){
+
+			let o_message = JSON.parse(str_message.data);
+
+			let str_messageEcho = JSON.stringify(o_message);
+
+			o_test.str_data = str_messageEcho;
+
+			o_test = Object.assign(o_test, o_message);
+
+		}
+
+	}
 
 }

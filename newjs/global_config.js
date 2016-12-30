@@ -7,6 +7,7 @@
 var Config = function(){
 this.o_other = { 	// то что не группируется
 
+	str_serverAddress: 		'wss://78.155.197.229:80',
 	str_gameName: 			'Авиамясо: Битва за территории',
 	num_maxFuel: 			100,
 	num_theftFuel: 			1, // сколько топлива воруется у каждого друга
@@ -926,31 +927,33 @@ this.o_ethalonFalse = 1;
 
 } // / Config
 
-var CONFIG = new Config();
+let CONFIG = new Config();
 
 // инициализируем доступность оружия и бонусов на самолетах
 CONFIG._getAvailableWeaponsAndSkillsForPlanes();
-console.log('arr_planes:', CONFIG.arr_planes);
+console.log('arr_planes:', !!CONFIG.arr_planes);
 
 // инициализация цен и необходимого рейтинга для параметров
 CONFIG._getPricesParams();
-console.log('arr_params:', CONFIG.arr_params);
+console.log('arr_params:', !!CONFIG.arr_params);
 
 // инициализируем время изучения технологии, в миллисекундах и часах для текста
 CONFIG._getTechnologiesTimes();
-console.log('_getTechnologiesTimes:o_generalization:', CONFIG.o_generalization);
+console.log('_getTechnologiesTimes:o_generalization:', !!CONFIG.o_generalization);
 
 // обработка шаблонов в оружии и скиллах
 CONFIG._weaponsAndSkillsTextGenerator();
-console.log('arr_weapons:', CONFIG.arr_weapons);
-console.log('arr_skills:', CONFIG.arr_skills);
+console.log('arr_weapons:', !!CONFIG.arr_weapons);
+console.log('arr_skills:', !!CONFIG.arr_skills);
 
 // функция генерирует текст по шаблону для медалей
 CONFIG._medailsTextGenerator();
-console.log('arr_medails:', CONFIG.arr_medails);
+console.log('arr_medails:', !!CONFIG.arr_medails);
 
 // тестируем на соответствие имена переменных. Принимает имя, которое потом рекурсивно конкатенирует с остальными
 {
 	let test = CONFIG._TEST('CONFIG');
-	console.log('test:', test);
+	console.log('test:', !!test);
 }
+
+module.exports.CONFIG = CONFIG;

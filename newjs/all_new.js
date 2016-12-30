@@ -2,7 +2,7 @@
 
 /* CLIENT CORE FILE */
 
-$(document).on('load', function() {
+$(document).ready(function() {
 
 	/* INITS GLOBAL */
 
@@ -31,6 +31,84 @@ $(document).on('load', function() {
 
 		} // /Object.prototype._comment
 
+
+		// готовит объект для связи с шаблонами в html
+		Object.prototype._linkTpl = function(){
+
+			for(let i = 0; i < this.arr_tpl.length; i++){
+
+				let str_fakeProp = '__' + this.arr_tpl[i];
+				let str_prop = this.arr_tpl[i];
+
+				if(this[str_prop]) this[str_fakeProp] = this[str_prop];
+
+				Object.defineProperty(this, str_prop, {
+
+					set: function (value) { 
+
+						this[str_fakeProp] = value;
+
+						let str_tplSelector = '[data-set-template*="' + (this.str_tplName + '.' + str_prop) + '"]';
+
+						document.querySelectorAll(str_tplSelector).forEach(function($_el){
+
+							let str_tpl = $_el.getAttribute('data-template');
+
+							let str_html = eval(str_tpl);
+
+							$_el.innerHTML = str_html;
+
+						});
+
+					},
+					get: function(){
+
+						return this[str_fakeProp];
+
+					}
+
+				});
+
+				// для начального заполнения
+				if(!this[str_prop]){
+
+					this[str_prop] = 'loading';
+
+				}
+				else{
+
+					this[str_prop] = this[str_prop];
+
+				}
+
+			}
+
+		}
+
+		// работает как assign, но переопределяет только существующие свойства, новые не трогает
+		Object.prototype._assign2 = function(o_join){
+
+			for(let str_prop in this){
+
+				// проверяем, есть ли свойство у объекта с которым сливаемся Ипроверка на прототип
+				if(o_join[str_prop] && this.hasOwnProperty(str_prop)){
+
+					if(typeof this[str_prop] == 'object' && typeof o_join[str_prop] == 'object'){
+
+						this[str_prop]._assign2(o_join[str_prop]);
+
+					}
+					else if(typeof this[str_prop] == typeof o_join[str_prop]){
+
+						this[str_prop] = o_join[str_prop];
+
+					}
+
+				}
+
+			}
+
+		}
 
 		// returned random value between min and max values
 		Math._randomMinMax = function(min,max){
@@ -403,7 +481,26 @@ $(document).on('load', function() {
 
 		constructor(o_params){
 
-			Object.assign(this, o_params);
+			this.str_tplName = 'o_player',
+			this.arr_tpl = [];
+
+			document.querySelectorAll('[data-set-template]').forEach(function($_el){
+
+				let str_link = $_el.getAttribute('data-set-template');
+
+				let arr_links = str_link.split(' ');
+
+				for(let i = 0; i < arr_links.length; i++){
+
+					arr_links[i] = arr_links[i].split('.');
+
+					arr_links[i] = arr_links[i][1];
+
+				}
+
+			})
+
+			//Object.assign(this, o_params);
 
 		} // /constructor
 
@@ -577,43 +674,57 @@ $(document).on('load', function() {
 
 		constructor(){
 
+			this._initTestForm = function(){
+
+				$('.test-form__json-send').on('click', function(){
+
+					let str_json = $('.test-form__json-data').val();
+
+					str_json = eval("(" + str_json + ")");
+
+					o_socket._jsonSend(str_json);
+
+					return false;
+
+				})
+
+			}
+
+			// скрывает игровой интерфейс
+			this._$_hiddenGame = function(){
+
+				$('.game-interface').addClass('.game-interface_off');
+
+				return;
+
+			}
+			// показывает игровой интерфейс
+			this._$_showGame = function(){
+
+				$('.game-interface').removeClass('.game-interface_off');
+
+				return;
+
+			}
+
+			// скрывает интерфейс битвы
+			this._$_hiddenWar = function(){
+
+				$('.war-interface').addClass('.war-interface_off');
+
+				return;
+
+			}
+			// показывает интерфейс битвы
+			this._$_showWar = function(){
+
+				$('.war-interface').removeClass('.war-interface_off');
+
+				return;
+
+			}
 
 		}
-
-		// скрывает игровой интерфейс
-		_$_hiddenGame(){
-
-			$('.game-interface').addClass('.game-interface_off');
-
-			return;
-
-		}
-		// показывает игровой интерфейс
-		_$_showGame(){
-
-			$('.game-interface').removeClass('.game-interface_off');
-
-			return;
-
-		}
-
-		// скрывает интерфейс битвы
-		_$_hiddenWar(){
-
-			$('.war-interface').addClass('.war-interface_off');
-
-			return;
-
-		}
-		// показывает интерфейс битвы
-		_$_showWar(){
-
-			$('.war-interface').removeClass('.war-interface_off');
-
-			return;
-
-		}
-
 
 	} // /Interface
 
@@ -621,14 +732,16 @@ $(document).on('load', function() {
 
 		constructor(){
 
-	
+			
 
 		}
 
 		// инициализация
 		_init(f_callback){
 
-			this.o_ws = new WebSocket('wss://78.155.197.229:80');
+			this.o_ws = new WebSocket('wss://78.155.197.229:80');		
+
+			this._route = new f_Router('all', o_test);
 
 			this.o_ws.onopen = f_callback;
 
@@ -638,11 +751,11 @@ $(document).on('load', function() {
 		_initEvents(){
 
 			// навешиваем метод роутера на входящие сообщения сокета
-			this.o_ws.onmessage = o_router._allRouter;
+			this.o_ws.onmessage = this._route;
 
 		}
 
-		// преобразует объект в json строку
+		// преобразует объект в json строку и отправляет в сокет
 		_jsonSend(ob_params){
 
 			let str_params = JSON.stringify(ob_params);
@@ -652,6 +765,19 @@ $(document).on('load', function() {
 		}
 
 	}
+
+	let o_test = {
+
+		str_tplName: 'o_test',
+		arr_tpl: ['str_data', 'num_test', 'o_test'],
+		num_test: 1,
+		o_test: {num_a: 1, num_b: 2}
+
+	}
+
+	o_test._linkTpl();
+
+	let o_interface = new Interface();
 
 	let o_api = {
 
@@ -692,6 +818,8 @@ $(document).on('load', function() {
 		console.log(o_result);
 
 		o_socket._initEvents();
+
+		o_interface._initTestForm();
 
 	}) // /o_promiseChain
 

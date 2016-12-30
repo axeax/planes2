@@ -1,5 +1,30 @@
 "use strict";
 
+class Player{
+
+	constructor(str_socketId, o_websocket){
+
+		// md5(время + соль + рандом)
+		this.str_socketId = str_socketId;
+
+		// ссылка на сокет
+		this.o_socket = o_websocket;
+
+	}
+
+	// отправка json сообщения игроку, принимает объект который нужно передать
+	_jsonSend(o_params){
+
+		let str_params = JSON.stringify(o_params);
+
+		this.o_socket.send(str_params);
+
+	}
+
+}
+
+let CONFIG = require('./global_config.js').CONFIG;
+
 // подключаем модуль файловой системы
 let module_fs = require('fs');
 
@@ -11,73 +36,102 @@ let https_server = require('https').createServer({
 
 // создаем wss сервер поверх https сервера
 let websocket_server = new require('ws').Server({server: https_server});
+let module_crypto = require('crypto');
 
-// массив игроков
-let arr_players = [];
-// объект игроков
-let o_players = {};
+// массив сокетов для отправки всем
+let arr_sockets = [];
 
-// при коннекте клиента
-websocket_server.on('connection', function(o_websocket){
+// объект всех игроков
+let o_players = {
 
-	// берем последний id пользователя
-	let num_id = arr_players.length;
+	// отправка сообщения всем игрокам
+	_broadcastJsonSend(o_message){
 
-	// в объекте нового игрока сохраняем сокет
-	o_players[`o_${num_id}`] = o_websocket;
+		for(let i = 0; i < arr_sockets.length; i++){
 
-	// добавляем этот же сокет в массив всех игроков
-	arr_players.push(o_websocket);
+			if(!arr_sockets[i].str_socketId){
 
-	//console.log('open', num_id);
+				arr_sockets.splice(i, 1);
+				i--;
 
-	o_websocket.on('message', function(str_message){
+				continue;
 
-		console.log(`before: ${str_message}`);
+			}
+			else{
 
-		let o_message = JSON.parse(str_message);
+				arr_sockets[i]._jsonSend(o_message);
+				
+			}
 
-		console.log(`after: ${o_message}`);
+		}
 
-	});
+	},
 
-	o_websocket.on('close', function(){
+	// генерирует уникальный (в рамках процесса) id для подключенного клиента
+	_idGenerator(){
 
-		console.log('close', num_id);
-		delete arr_players[num_id];
-		delete o_players[`o_${num_id}`];
+		// формируем id сокета по md5(время + соль + рандом)
+		let str_socketId = Date.now() + 'fskjdnfirun' + Math.random();
+		str_socketId = module_crypto.createHash('md5').update(str_socketId).digest('hex');
 
-	});
+		if(!this[str_socketId]){
 
-});
+			return str_socketId;
 
-var test = 0;
-var test2 = Date.now();
-var iters = 0;
+		}
+		else{
 
-setInterval(function(){
-
-	test += (Date.now() - test2);
-	iters += 1;
-	test2 = Date.now();
-
-}, 5);
-
-setInterval(function(){
-
-	for(let num_socket = 0; num_socket < arr_players.length; num_socket++){
-
-		if(arr_players[num_socket]){
-
-			arr_players[num_socket].send(`${arr_players.length}`);
+			return this._idGenerator();
 
 		}
 
 	}
 
-	console.log(`${arr_players.length}`);
-	console.log('sended', test/iters);
-	test = 0;
-	iters = 0;
+};
 
-}, 5000);
+// при коннекте клиента
+websocket_server.on('connection', function(o_websocket){
+
+	// формируем id сокета по md5(время + соль + рандом)
+	let str_socketId = o_players._idGenerator();
+
+	// создаем нового игрока
+	o_players[str_socketId] = new Player(str_socketId, o_websocket);
+
+	// создаем ссылку на объект игрока для последующего удобства. Работает через замыкание
+	let o_currentPlayer = o_players[str_socketId];
+
+	console.log(`Новый коннект: ${str_socketId}`);
+
+	// добавляем ссылку на игрока в массив для общей рассылки
+	arr_sockets.push(this);
+
+	// скидываем клиенту конфиг
+	o_currentPlayer._jsonSend(CONFIG);
+
+	o_websocket.on('message', function(str_message){
+
+		let o_message = JSON.parse(str_message);
+
+		console.log(`сообщение получено:`);
+		console.log(o_message);
+
+		o_currentPlayer._jsonSend(o_message);
+
+
+	});
+
+	o_websocket.on('close', function(){
+
+		// устанавливаем имя сокета в null для последующего удаления из массива всех игроков
+		o_currentPlayer.str_socketId = null;
+
+		console.log('close', o_currentPlayer.str_socketId);
+
+		// чистим ссылки
+		o_currentPlayer = null;
+		o_players[str_socketId] = null;
+
+	});
+
+});
